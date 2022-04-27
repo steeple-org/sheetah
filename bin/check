@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+
+set -o errexit -o nounset -o pipefail -o xtrace
+
+bundle exec rubocop --parallel
+bundle exec rspec
+
+tmpdir="$(mktemp -d)"
+
+gem build --strict --output "$tmpdir/sheetah.gem" && build_exit=$? || build_exit=$?
+
+rm -r "$tmpdir"
+
+exit $build_exit
