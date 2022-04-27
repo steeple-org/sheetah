@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+find spec/ -name '*_spec.rb' -exec bin/rspec "{}" \;

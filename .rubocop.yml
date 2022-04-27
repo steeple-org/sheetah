@@ -3,11 +3,13 @@
 
 require:
   - rubocop-performance
+  - rubocop-rspec
 
 AllCops:
   TargetRubyVersion: 2.7
   NewCops: enable
   Exclude:
+    - bin/rspec
     - bin/rubocop
 
 Layout/LineLength:
@@ -16,6 +18,34 @@ Layout/LineLength:
 Layout/HashAlignment:
   EnforcedColonStyle: [key, table]
   EnforcedHashRocketStyle: [key, table]
+
+Metrics/BlockLength:
+  Exclude:
+    - spec/**/*
+
+RSpec/ExampleLength:
+  Max: 10
+
+RSpec/MessageSpies:
+  Enabled: false
+
+RSpec/MultipleExpectations:
+  Max: 5
+
+RSpec/MultipleMemoizedHelpers:
+  Max: 10
+
+RSpec/NamedSubject:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Max: 5
+
+RSpec/StubbedMock:
+  Enabled: false
+
+RSpec/VerifiedDoubles:
+  IgnoreSymbolicNames: true
 
 Style/Documentation:
   Enabled: false
