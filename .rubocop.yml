@@ -20,6 +20,10 @@ Layout/HashAlignment:
   EnforcedColonStyle: [key, table]
   EnforcedHashRocketStyle: [key, table]
 
+Lint/EmptyBlock:
+  Exclude:
+    - spec/**/*
+
 Metrics/BlockLength:
   Exclude:
     - spec/**/*
@@ -31,7 +35,7 @@ RSpec/ContextWording:
   Enabled: false
 
 RSpec/ExampleLength:
-  Max: 10
+  Max: 15
 
 RSpec/MessageSpies:
   Enabled: false

@@ -47,7 +47,10 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
 
   context "when there is a sheet error" do
     let(:error_class) do
-      Class.new(Sheetah::Sheet::Error)
+      klass = Class.new(Sheetah::Sheet::Error)
+      stub_const("Foo::Bar::BazError", klass)
+      klass.msg_code!
+      klass
     end
 
     let(:error) do
@@ -58,10 +61,21 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
       stub_sheet_open_ko(error)
     end
 
-    it "is an empty failure" do
-      result = call
-
-      expect(result).to eq(Failure())
+    it "is an empty failure, with messages" do
+      expect(call).to eq(
+        Sheetah::ProcessorResult.new(
+          result: Failure(),
+          messages: [
+            Sheetah::Messaging::Message.new(
+              code: "foo.bar.baz_error",
+              code_data: nil,
+              scope: "SHEET",
+              scope_data: nil,
+              severity: "ERROR"
+            ),
+          ]
+        )
+      )
     end
   end
 
@@ -96,7 +110,7 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
     def stub_row_processing
       allow(Sheetah::RowProcessor).to(
         receive(:new)
-        .with(headers: sheet_headers)
+        .with(headers: sheet_headers, messenger: a_kind_of(Sheetah::Messaging::Messenger))
         .and_return(row_processor = instance_double(Sheetah::RowProcessor))
       )
 
@@ -114,10 +128,15 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
       stub_row_processing
     end
 
-    it "is an empty success" do
+    it "is an empty success, with messages" do
       result = call
 
-      expect(result).to eq(Success())
+      expect(result).to eq(
+        Sheetah::ProcessorResult.new(
+          result: Success(),
+          messages: []
+        )
+      )
     end
 
     it "yields each processed row" do
