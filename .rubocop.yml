@@ -1,0 +1,42 @@
+# See the documentation here: https://docs.rubocop.org/
+# Please keep the list of cops in alphabetical order.
+
+require:
+  - rubocop-performance
+
+AllCops:
+  TargetRubyVersion: 2.7
+  NewCops: enable
+  Exclude:
+    - bin/rubocop
+
+Layout/LineLength:
+  Max: 100
+
+Layout/HashAlignment:
+  EnforcedColonStyle: [key, table]
+  EnforcedHashRocketStyle: [key, table]
+
+Style/Documentation:
+  Enabled: false
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/GuardClause:
+  Enabled: false
+
+Style/RaiseArgs:
+  Enabled: false
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  EnforcedStyle: double_quotes
+
+Style/TrailingCommaInArrayLiteral:
+  EnforcedStyleForMultiline: consistent_comma
+
+Style/TrailingCommaInHashLiteral:
+  EnforcedStyleForMultiline: consistent_comma
