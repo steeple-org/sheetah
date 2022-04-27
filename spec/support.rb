@@ -3,3 +3,4 @@
 require_relative "spec_helper"
 require_relative "support/simplecov"
 require_relative "support/monadic_result"
+require_relative "support/fixtures"
