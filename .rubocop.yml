@@ -11,6 +11,7 @@ AllCops:
   Exclude:
     - bin/rspec
     - bin/rubocop
+    - bin/yard
 
 Layout/LineLength:
   Max: 100

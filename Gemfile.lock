@@ -52,6 +52,9 @@ GEM
     simplecov-html (0.12.3)
     simplecov_json_formatter (0.1.4)
     unicode-display_width (2.1.0)
+    webrick (1.7.0)
+    yard (0.9.27)
+      webrick (~> 1.7.0)
 
 PLATFORMS
   x86_64-linux
@@ -63,6 +66,7 @@ DEPENDENCIES
   rubocop-rspec (~> 2.10)
   sheetah!
   simplecov (~> 0.21.2)
+  yard (~> 0.9.27)
 
 BUNDLED WITH
    2.3.12

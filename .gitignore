@@ -3,3 +3,7 @@ spec/examples.txt
 
 # SimpleCov artifacts
 /coverage
+
+# YARD artifacts
+/.yardoc
+/doc

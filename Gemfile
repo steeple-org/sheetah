@@ -14,3 +14,6 @@ gem "simplecov", "~> 0.21.2"
 gem "rubocop", "~> 1.28"
 gem "rubocop-performance", "~> 1.13"
 gem "rubocop-rspec", "~> 2.10"
+
+# A Ruby documentation tool
+gem "yard", "~> 0.9.27"
