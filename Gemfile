@@ -17,3 +17,6 @@ gem "rubocop-rspec", "~> 2.10"
 
 # A Ruby documentation tool
 gem "yard", "~> 0.9.27"
+
+# An optional library, used to parse XLSX documents when needed
+gem "roo", "~> 2.9"
