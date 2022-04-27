@@ -15,9 +15,11 @@ RSpec.shared_context "sheet_factories" do
     Sheetah::Sheet::Cell.new(...)
   end
 
-  def cells(values, row:, col: 1)
-    values.map.with_index(col) do |value, cell_col|
-      cell(row: row, col: cell_col, value: value)
+  def cells(values, row:, col: "A")
+    int = Sheetah::Sheet.col2int(col)
+
+    values.map.with_index(int) do |value, index|
+      cell(row: row, col: Sheetah::Sheet.int2col(index), value: value)
     end
   end
 end

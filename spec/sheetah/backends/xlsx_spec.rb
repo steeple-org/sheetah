@@ -17,16 +17,16 @@ RSpec.describe Sheetah::Backends::Xlsx do
   describe "#each_header" do
     let(:expected_headers) do
       [
-        header(value: "matricule", col: 1),
-        header(value: "nom", col: 2),
-        header(value: "prénom", col: 3),
-        header(value: "date de naissance", col: 4),
-        header(value: "email", col: 5),
+        header(value: "matricule", col: "A"),
+        header(value: "nom", col: "B"),
+        header(value: "prénom", col: "C"),
+        header(value: "date de naissance", col: "D"),
+        header(value: "email", col: "E"),
       ]
     end
 
     context "with a block" do
-      it "yields each header, with its 1-based index" do
+      it "yields each header, with its letter-based index" do
         expect { |b| sheet.each_header(&b) }.to yield_successive_args(*expected_headers)
       end
 

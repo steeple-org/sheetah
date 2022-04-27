@@ -132,15 +132,15 @@ RSpec.describe Sheetah::Backends::Csv do
   describe "#each_header" do
     let(:expected_headers) do
       [
-        header(value: raw_table[0][0], col: 1),
-        header(value: raw_table[0][1], col: 2),
-        header(value: raw_table[0][2], col: 3),
-        header(value: raw_table[0][3], col: 4),
+        header(value: raw_table[0][0], col: "A"),
+        header(value: raw_table[0][1], col: "B"),
+        header(value: raw_table[0][2], col: "C"),
+        header(value: raw_table[0][3], col: "D"),
       ]
     end
 
     context "with a block" do
-      it "yields each header, with its 1-based index" do
+      it "yields each header, with its letter-based index" do
         expect { |b| sheet.each_header(&b) }.to yield_successive_args(*expected_headers)
       end
 

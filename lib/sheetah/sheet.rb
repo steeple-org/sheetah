@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "sheet/col_converter"
 require_relative "errors/error"
 require_relative "utils/monadic_result"
 
@@ -7,6 +8,14 @@ module Sheetah
   module Sheet
     def self.included(mod)
       mod.extend(ClassMethods)
+    end
+
+    def self.col2int(...)
+      COL_CONVERTER.col2int(...)
+    end
+
+    def self.int2col(...)
+      COL_CONVERTER.int2col(...)
     end
 
     module ClassMethods

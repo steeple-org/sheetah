@@ -82,6 +82,57 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
     end
   end
 
+  describe "singleton class methods" do
+    let(:samples) do
+      [
+        ["A", 1],
+        ["B", 2],
+        ["Z", 26],
+        ["AA", 27],
+        ["AZ", 52],
+        ["BA", 53],
+        ["ZA", 677],
+        ["ZZ", 702],
+        ["AAA", 703],
+        ["AAZ", 728],
+        ["ABA", 729],
+        ["BZA", 2029],
+      ]
+    end
+
+    describe "::col2int" do
+      it "turns letter-based indexes into integer-based indexes" do
+        samples.each do |(col, int)|
+          res = described_class.col2int(col)
+          expect(res).to eq(int), "Expected #{col} => #{int}, got: #{res}"
+        end
+      end
+
+      it "fails on invalid inputs" do
+        expect { described_class.col2int(nil) }.to raise_error(ArgumentError)
+        expect { described_class.col2int("") }.to raise_error(ArgumentError)
+        expect { described_class.col2int("a") }.to raise_error(ArgumentError)
+        expect { described_class.col2int("€") }.to raise_error(ArgumentError)
+      end
+    end
+
+    describe "::int2col" do
+      it "turns integer-based indexes into letter-based indexes" do
+        samples.each do |(col, int)|
+          res = described_class.int2col(int)
+          expect(res).to eq(col), "Expected #{int} => #{col}, got: #{res}"
+        end
+      end
+
+      it "fails on invalid inputs" do
+        expect { described_class.int2col(nil) }.to raise_error(ArgumentError)
+        expect { described_class.int2col(0) }.to raise_error(ArgumentError)
+        expect { described_class.int2col(-12) }.to raise_error(ArgumentError)
+        expect { described_class.int2col(27.0) }.to raise_error(ArgumentError)
+      end
+    end
+  end
+
   describe "::open" do
     let(:sheet) do
       instance_double(sheet_class)

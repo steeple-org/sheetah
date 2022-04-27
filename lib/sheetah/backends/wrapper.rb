@@ -27,7 +27,7 @@ module Sheetah
         return to_enum(:each_header) { @cols_count } unless block_given?
 
         1.upto(@cols_count) do |col|
-          yield Header.new(col: col, value: @headers[col - 1])
+          yield Header.new(col: Sheet.int2col(col), value: @headers[col - 1])
         end
 
         self
@@ -40,7 +40,7 @@ module Sheetah
           raw = @table[row]
 
           value = Array.new(@cols_count) do |col_idx|
-            Cell.new(row: row, col: col_idx + 1, value: raw[col_idx])
+            Cell.new(row: row, col: Sheet.int2col(col_idx + 1), value: raw[col_idx])
           end
 
           yield Row.new(row: row, value: value)

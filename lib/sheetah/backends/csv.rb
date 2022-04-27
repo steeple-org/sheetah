@@ -37,8 +37,10 @@ module Sheetah
       def each_header
         return to_enum(:each_header) { @cols_count } unless block_given?
 
-        @headers.each_with_index do |header, index|
-          yield Header.new(col: index + 1, value: header)
+        @headers.each_with_index do |header, col_idx|
+          col = Sheet.int2col(col_idx + 1)
+
+          yield Header.new(col: col, value: header)
         end
 
         self
@@ -49,7 +51,9 @@ module Sheetah
 
         @csv.each.with_index(1) do |raw, row|
           value = Array.new(@cols_count) do |col_idx|
-            Cell.new(row: row, col: col_idx + 1, value: raw[col_idx])
+            col = Sheet.int2col(col_idx + 1)
+
+            Cell.new(row: row, col: col, value: raw[col_idx])
           end
 
           yield Row.new(row: row, value: value)
