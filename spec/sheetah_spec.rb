@@ -1,77 +1,48 @@
 # frozen_string_literal: true
 
-require "sheetah/column"
-require "sheetah/sheet_processor"
-require "sheetah/specification"
-require "sheetah/backends/wrapper"
-
-require "sheetah/types/composites/array"
-require "sheetah/types/scalars/scalar"
-require "sheetah/types/scalars/string"
-require "sheetah/types/scalars/email"
+require "sheetah"
 
 RSpec.describe Sheetah, monadic_result: true do
-  let(:columns) do
-    foo_type = Sheetah::Types::Scalars::String.new
+  let(:types) do
+    reverse_string = Sheetah::Types::Scalars::String.cast { |v, _m| v.reverse }
 
-    bar_type = Sheetah::Types::Composites::Array.new(
-      [
-        Sheetah::Types::Scalars::String.new,
-        Sheetah::Types::Scalars::Scalar.new,
-        Sheetah::Types::Scalars::Email.new,
-        Sheetah::Types::Scalars::Scalar.new,
-        Sheetah::Types::Scalars::Scalar.new,
+    Sheetah::Types::Container.new(
+      scalars: {
+        reverse_string: reverse_string.method(:new),
+      }
+    )
+  end
+
+  let(:template) do
+    Sheetah::Template.new(
+      attributes: [
+        {
+          key: :foo,
+          type: :reverse_string,
+        },
+        {
+          key: :bar,
+          type: {
+            composite: :array,
+            scalars: %i[
+              string
+              scalar
+              email
+              scalar
+              scalar
+            ],
+          },
+        },
       ]
     )
+  end
 
-    [
-      Sheetah::Column.new(
-        key: :foo,
-        type: foo_type,
-        index: nil,
-        header: "Foo",
-        header_pattern: /^foo$/i
-      ),
-      Sheetah::Column.new(
-        key: :bar,
-        type: bar_type,
-        index: 0,
-        header: "Bar 1",
-        header_pattern: /^bar 1$/i
-      ),
-      Sheetah::Column.new(
-        key: :bar,
-        type: bar_type,
-        index: 1,
-        header: "Bar 2",
-        header_pattern: /^bar 2$/i
-      ),
-      Sheetah::Column.new(
-        key: :bar,
-        type: bar_type,
-        index: 2,
-        header: "Bar 3",
-        header_pattern: /^bar 3$/i
-      ),
-      Sheetah::Column.new(
-        key: :bar,
-        type: bar_type,
-        index: 3,
-        header: "Bar 4",
-        header_pattern: /^bar 4$/i
-      ),
-      Sheetah::Column.new(
-        key: :bar,
-        type: bar_type,
-        index: 4,
-        header: "Bar 5",
-        header_pattern: /^bar 5$/i
-      ),
-    ]
+  let(:template_config) do
+    Sheetah::TemplateConfig.new(types: types)
   end
 
   let(:specification) do
-    Sheetah::Specification.new
+    template.apply(template_config)
   end
 
   let(:processor) do
@@ -97,12 +68,6 @@ RSpec.describe Sheetah, monadic_result: true do
     a
   end
 
-  before do
-    columns.each do |column|
-      specification.set(column.header_pattern, column)
-    end
-  end
-
   context "when there is no sheet error" do
     it "is a success without errors" do
       result = process(input) {}
@@ -123,11 +88,11 @@ RSpec.describe Sheetah, monadic_result: true do
       results = process_to_a(input)
 
       expect(results[0].result).to eq(
-        Success(foo: "hello", bar: [nil, nil, "foo@bar.baz", nil, Float])
+        Success(foo: "olleh", bar: [nil, nil, "foo@bar.baz", nil, Float])
       )
 
       expect(results[1].result).to eq(
-        Success(foo: "world", bar: [nil, nil, "foo@bar.baz", nil, Float])
+        Success(foo: "dlrow", bar: [nil, nil, "foo@bar.baz", nil, Float])
       )
     end
 

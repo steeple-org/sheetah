@@ -14,6 +14,8 @@ module Sheetah
       ERROR = "ERROR"
     end
 
+    # TODO: list all possible message code in a systematic way,
+    # so that i18n do not miss any by mistake.
     class Message
       def initialize(
         code:,
