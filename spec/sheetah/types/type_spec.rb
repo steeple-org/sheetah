@@ -207,5 +207,37 @@ RSpec.describe Sheetah::Types::Type do
         expect(type.cast_chain).to be_frozen
       end
     end
+
+    describe "abstract API" do
+      let(:type) { described_class.new }
+
+      def raise_abstract_method_error
+        raise_error(NoMethodError, /you must implement this method/i)
+      end
+
+      describe "#scalar?" do
+        it "is abstract" do
+          expect { type.scalar? }.to raise_abstract_method_error
+        end
+      end
+
+      describe "#composite?" do
+        it "is abstract" do
+          expect { type.composite? }.to raise_abstract_method_error
+        end
+      end
+
+      describe "#scalar" do
+        it "is abstract" do
+          expect { type.scalar(double, double, double) }.to raise_abstract_method_error
+        end
+      end
+
+      describe "#composite" do
+        it "is abstract" do
+          expect { type.composite(double, double) }.to raise_abstract_method_error
+        end
+      end
+    end
   end
 end

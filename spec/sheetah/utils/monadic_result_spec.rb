@@ -22,9 +22,9 @@ RSpec.describe Sheetah::Utils::MonadicResult do
     expect(klass::Failure).to be(described_class::Failure)
   end
 
-  it "includes two builder methods" do
+  it "includes three builder methods" do
     expect(builder.methods - Object.methods).to contain_exactly(
-      :Success, :Failure
+      :Success, :Failure, :Do
     )
   end
 
@@ -45,6 +45,64 @@ RSpec.describe Sheetah::Utils::MonadicResult do
 
     it "may wrap a value in a Failure instance" do
       expect(builder.Failure(value)).to eq(described_class::Failure.new(value))
+    end
+  end
+
+  describe "#Do" do
+    let(:v1) { double }
+    let(:v2) { double }
+    let(:v3) { double }
+    let(:v4) { double }
+    let(:v5) { double }
+
+    it "returns the last expression of the block" do
+      result = builder.Do do
+        v1
+        v2
+        v3
+      end
+
+      expect(result).to be(v3)
+    end
+
+    it "continues the sequence when unwrapping a Success" do
+      v = nil
+
+      result = builder.Do do
+        v = builder.Success(v1).unwrap
+        v = builder.Success(v2).unwrap
+        v = builder.Success(v3).unwrap
+      end
+
+      expect(result).to be(v3)
+      expect(v).to be(v3)
+    end
+
+    it "aborts the sequence when unwrapping a Failure" do
+      v = nil
+
+      result = builder.Do do
+        v = builder.Success(v1).unwrap
+        v = builder.Failure(v2).unwrap
+        # :nocov:
+        v = builder.Success(v3).unwrap
+        # :nocov:
+      end
+
+      expect(result).to eq(builder.Failure(v2))
+      expect(v).to be(v1)
+    end
+
+    it "is compatible with ensure" do
+      ensured = false
+
+      builder.Do do
+        builder.Failure().unwrap
+      ensure
+        ensured = true
+      end
+
+      expect(ensured).to be(true)
     end
   end
 end

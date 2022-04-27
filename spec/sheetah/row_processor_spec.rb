@@ -1,28 +1,45 @@
 # frozen_string_literal: true
 
 require "sheetah/messaging"
+require "sheetah/headers"
 require "sheetah/processor_result"
 require "sheetah/row_processor"
 require "sheetah/sheet"
 
 RSpec.describe Sheetah::RowProcessor, monadic_result: true do
-  let(:headers) do
-    instance_double(Enumerable)
-  end
-
   let(:messenger) do
-    instance_double(Sheetah::Messaging::Messenger)
+    instance_double(Sheetah::Messaging::Messenger, dup: row_messenger)
   end
 
-  let(:messenger_dup) do
-    instance_double(Sheetah::Messaging::Messenger, messages: double)
+  let(:row_messenger) do
+    Sheetah::Messaging::Messenger.new
+  end
+
+  let(:headers) do
+    [
+      instance_double(Sheetah::Headers::Header, column: double),
+      instance_double(Sheetah::Headers::Header, column: double),
+      instance_double(Sheetah::Headers::Header, column: double),
+    ]
+  end
+
+  let(:cells) do
+    [
+      instance_double(Sheetah::Sheet::Cell, value: double, col: double),
+      instance_double(Sheetah::Sheet::Cell, value: double, col: double),
+      instance_double(Sheetah::Sheet::Cell, value: double, col: double),
+    ]
   end
 
   let(:row) do
-    instance_double(Sheetah::Sheet::Row, row: double, value: double)
+    instance_double(Sheetah::Sheet::Row, row: double, value: cells)
   end
 
-  let(:processed_row) do
+  let(:row_value_builder) do
+    instance_double(Sheetah::RowValueBuilder)
+  end
+
+  let(:row_value_builder_result) do
     double
   end
 
@@ -31,15 +48,27 @@ RSpec.describe Sheetah::RowProcessor, monadic_result: true do
   end
 
   before do
-    allow(headers).to receive(:zip).with(row.value).and_return(processed_row)
-    allow(messenger).to receive(:dup).with(no_args).and_return(messenger_dup)
+    allow(Sheetah::RowValueBuilder).to(
+      receive(:new).with(row_messenger).and_return(row_value_builder)
+    )
   end
 
   it "processes the row and wraps the result with a dedicated set of messages" do
+    3.times do |i|
+      expect(row_value_builder).to receive(:add).with(headers[i].column, cells[i].value).ordered do
+        expect(row_messenger).to have_attributes(
+          scope: Sheetah::Messaging::SCOPES::CELL,
+          scope_data: { row: row.row, col: cells[i].col }
+        )
+      end
+    end
+
+    expect(row_value_builder).to receive(:result).ordered.and_return(row_value_builder_result)
+
     expect(processor.call(row)).to eq(
       Sheetah::ProcessorResult.new(
-        result: Success(processed_row),
-        messages: messenger_dup.messages
+        result: row_value_builder_result,
+        messages: row_messenger.messages
       )
     )
   end

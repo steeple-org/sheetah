@@ -1,10 +1,15 @@
 # frozen_string_literal: true
 
 require "sheetah/sheet_processor"
+require "sheetah/specification"
 
 RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
+  let(:specification) do
+    instance_double(Sheetah::Specification)
+  end
+
   let(:processor) do
-    described_class.new
+    described_class.new(specification)
   end
 
   let(:sheet_class) do
@@ -28,21 +33,25 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
     processor.call(*backend_args, backend: sheet_class, **backend_opts, &block)
   end
 
-  def stub_sheet_open_ok(success)
+  def stub_sheet_open_ok(success = double)
     allow(sheet_class).to(
       receive(:open)
       .with(*backend_args, **backend_opts)
       .and_yield(sheet)
       .and_return(Success(success))
     )
+
+    success
   end
 
-  def stub_sheet_open_ko(failure)
+  def stub_sheet_open_ko(failure = double)
     allow(sheet_class).to(
       receive(:open)
       .with(*backend_args, **backend_opts)
       .and_return(Failure(failure))
     )
+
+    failure
   end
 
   context "when there is a sheet error" do
@@ -79,7 +88,7 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
     end
   end
 
-  context "when there is no sheet error" do
+  shared_context "when there is no sheet error" do
     let(:sheet_headers) do
       Array.new(2) { instance_double(Sheetah::Sheet::Header) }
     end
@@ -88,12 +97,20 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
       Array.new(3) { instance_double(Sheetah::Sheet::Row) }
     end
 
-    let(:processed_rows) do
-      Array.new(sheet_rows.size) { double }
+    let(:messenger) do
+      instance_double(Sheetah::Messaging::Messenger, messages: double)
     end
 
-    let(:sheet_open_success) do
-      double
+    let(:headers) do
+      instance_double(Sheetah::Headers)
+    end
+
+    def stub_messenger
+      allow(Sheetah::Messaging::Messenger).to(
+        receive(:new)
+        .with(no_args)
+        .and_return(messenger)
+      )
     end
 
     def stub_enumeration(obj, method_name, enumerable)
@@ -107,10 +124,67 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
       end
     end
 
+    def stub_headers
+      allow(Sheetah::Headers).to(
+        receive(:new)
+        .with(specification: specification, messenger: messenger)
+        .and_return(headers)
+      )
+    end
+
+    def stub_headers_ops(result)
+      sheet_headers.each do |sheet_header|
+        expect(headers).to receive(:add).with(sheet_header).ordered
+      end
+
+      expect(headers).to receive(:result).and_return(result).ordered
+    end
+
+    before do
+      stub_messenger
+      stub_headers
+
+      stub_sheet_open_ok
+
+      stub_enumeration(sheet, :each_header, sheet_headers)
+      stub_enumeration(sheet, :each_row, sheet_rows)
+    end
+  end
+
+  context "when there is a header error" do
+    include_context "when there is no sheet error"
+
+    before do
+      stub_headers_ops(Failure())
+    end
+
+    it "is an empty failure, with messages" do
+      result = call
+
+      expect(result).to eq(
+        Sheetah::ProcessorResult.new(
+          result: Failure(),
+          messages: messenger.messages
+        )
+      )
+    end
+  end
+
+  context "when there is no error" do
+    include_context "when there is no sheet error"
+
+    let(:headers_spec) do
+      double
+    end
+
+    let(:processed_rows) do
+      Array.new(sheet_rows.size) { double }
+    end
+
     def stub_row_processing
       allow(Sheetah::RowProcessor).to(
         receive(:new)
-        .with(headers: sheet_headers, messenger: a_kind_of(Sheetah::Messaging::Messenger))
+        .with(headers: headers_spec, messenger: messenger)
         .and_return(row_processor = instance_double(Sheetah::RowProcessor))
       )
 
@@ -120,10 +194,7 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
     end
 
     before do
-      stub_sheet_open_ok(sheet_open_success)
-
-      stub_enumeration(sheet, :each_header, sheet_headers)
-      stub_enumeration(sheet, :each_row, sheet_rows)
+      stub_headers_ops(Success(headers_spec))
 
       stub_row_processing
     end
@@ -134,7 +205,7 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
       expect(result).to eq(
         Sheetah::ProcessorResult.new(
           result: Success(),
-          messages: []
+          messages: messenger.messages
         )
       )
     end

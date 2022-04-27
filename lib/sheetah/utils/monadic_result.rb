@@ -25,6 +25,9 @@ module Sheetah
 
       Unit.freeze
 
+      DO_TOKEN = :MonadicResultDo
+      private_constant :DO_TOKEN
+
       module Result
         UnwrapError  = Class.new(StandardError)
         VariantError = Class.new(UnwrapError)
@@ -67,6 +70,18 @@ module Sheetah
 
           wrapped
         end
+
+        def value?
+          wrapped unless empty?
+        end
+
+        def open
+          if empty?
+            yield
+          else
+            yield wrapped
+          end
+        end
       end
 
       class Success
@@ -87,6 +102,15 @@ module Sheetah
         def failure
           raise VariantError, "Not a Failure"
         end
+
+        def unwrap
+          value?
+        end
+
+        alias bind open
+        public :bind
+
+        alias or itself
 
         private
 
@@ -114,6 +138,15 @@ module Sheetah
           value
         end
 
+        def unwrap
+          throw DO_TOKEN, self
+        end
+
+        alias bind itself
+
+        alias or open
+        public :or
+
         private
 
         def variant
@@ -129,6 +162,10 @@ module Sheetah
 
       def Failure(...)
         Failure.new(...)
+      end
+
+      def Do(&block)
+        catch(DO_TOKEN, &block)
       end
 
       # rubocop:enable Naming/MethodName

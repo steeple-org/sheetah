@@ -101,6 +101,24 @@ RSpec.describe Sheetah::Utils::MonadicResult::Success, monadic_result: true do
     end
   end
 
+  describe "#unwrap" do
+    context "when empty" do
+      it "returns nil" do
+        result = described_class.new
+
+        expect(result.unwrap).to be_nil
+      end
+    end
+
+    context "when non-empty" do
+      it "returns the wrapped value" do
+        result = described_class.new(wrapped = double)
+
+        expect(result.unwrap).to be(wrapped)
+      end
+    end
+  end
+
   describe "#discard" do
     it "returns the same variant, without a value" do
       empty_result = described_class.new
@@ -108,6 +126,61 @@ RSpec.describe Sheetah::Utils::MonadicResult::Success, monadic_result: true do
 
       expect(empty_result.discard).to eq(empty_result)
       expect(filled_result.discard).to eq(empty_result)
+    end
+  end
+
+  describe "#bind" do
+    context "when empty" do
+      let(:result) { described_class.new }
+
+      it "yields nil" do
+        expect { |b| result.bind(&b) }.to yield_with_no_args
+      end
+
+      it "returns the block result" do
+        block_value = double
+        expect(result.bind { block_value }).to eq(block_value)
+      end
+    end
+
+    context "when filled" do
+      let(:value) { double }
+      let(:result) { described_class.new(value) }
+
+      it "yields the value" do
+        expect { |b| result.bind(&b) }.to yield_with_args(value)
+      end
+
+      it "returns the block result" do
+        block_value = double
+        expect(result.bind { block_value }).to eq(block_value)
+      end
+    end
+  end
+
+  describe "#or" do
+    context "when empty" do
+      let(:result) { described_class.new }
+
+      it "doesn't yield" do
+        expect { |b| result.or(&b) }.not_to yield_control
+      end
+
+      it "returns self" do
+        expect(result.or { double }).to be(result)
+      end
+    end
+
+    context "when filled" do
+      let(:result) { described_class.new(double) }
+
+      it "doesn't yield" do
+        expect { |b| result.or(&b) }.not_to yield_control
+      end
+
+      it "returns self" do
+        expect(result.or { double }).to be(result)
+      end
     end
   end
 end

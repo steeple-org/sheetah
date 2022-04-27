@@ -55,6 +55,22 @@ module Sheetah
         @cast_chain.call(...)
       end
 
+      def scalar?
+        raise NoMethodError, "You must implement this method in a subclass"
+      end
+
+      def composite?
+        raise NoMethodError, "You must implement this method in a subclass"
+      end
+
+      def scalar(_index, _value, _messenger)
+        raise NoMethodError, "You must implement this method in a subclass"
+      end
+
+      def composite(_value, _messenger)
+        raise NoMethodError, "You must implement this method in a subclass"
+      end
+
       def freeze
         @cast_chain.freeze
         super

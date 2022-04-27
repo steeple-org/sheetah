@@ -29,7 +29,7 @@ Metrics/BlockLength:
     - spec/**/*
 
 Metrics/MethodLength:
-  Max: 12
+  Max: 15
 
 RSpec/ContextWording:
   Enabled: false

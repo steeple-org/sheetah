@@ -101,6 +101,26 @@ RSpec.describe Sheetah::Utils::MonadicResult::Failure, monadic_result: true do
     end
   end
 
+  describe "#unwrap" do
+    let(:do_token) { :MonadicResultDo }
+
+    context "when empty" do
+      it "returns nil" do
+        result = described_class.new
+
+        expect { result.unwrap }.to throw_symbol(do_token, result)
+      end
+    end
+
+    context "when non-empty" do
+      it "returns the wrapped value" do
+        result = described_class.new(double)
+
+        expect { result.unwrap }.to throw_symbol(do_token, result)
+      end
+    end
+  end
+
   describe "#discard" do
     it "returns the same variant, without a value" do
       empty_result = described_class.new
@@ -108,6 +128,61 @@ RSpec.describe Sheetah::Utils::MonadicResult::Failure, monadic_result: true do
 
       expect(empty_result.discard).to eq(empty_result)
       expect(filled_result.discard).to eq(empty_result)
+    end
+  end
+
+  describe "#bind" do
+    context "when empty" do
+      let(:result) { described_class.new }
+
+      it "doesn't yield" do
+        expect { |b| result.bind(&b) }.not_to yield_control
+      end
+
+      it "returns self" do
+        expect(result.bind { double }).to be(result)
+      end
+    end
+
+    context "when filled" do
+      let(:result) { described_class.new(double) }
+
+      it "doesn't yield" do
+        expect { |b| result.bind(&b) }.not_to yield_control
+      end
+
+      it "returns self" do
+        expect(result.bind { double }).to be(result)
+      end
+    end
+  end
+
+  describe "#or" do
+    context "when empty" do
+      let(:result) { described_class.new }
+
+      it "yields nil" do
+        expect { |b| result.or(&b) }.to yield_with_no_args
+      end
+
+      it "returns the block result" do
+        block_value = double
+        expect(result.or { block_value }).to eq(block_value)
+      end
+    end
+
+    context "when filled" do
+      let(:value) { double }
+      let(:result) { described_class.new(value) }
+
+      it "yields the value" do
+        expect { |b| result.or(&b) }.to yield_with_args(value)
+      end
+
+      it "returns the block result" do
+        block_value = double
+        expect(result.or { block_value }).to eq(block_value)
+      end
     end
   end
 end
