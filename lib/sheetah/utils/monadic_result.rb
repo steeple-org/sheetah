@@ -52,6 +52,10 @@ module Sheetah
 
         alias to_s inspect
 
+        def discard
+          empty? ? self : self.class.new
+        end
+
         protected
 
         attr_reader :wrapped

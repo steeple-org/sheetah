@@ -100,4 +100,14 @@ RSpec.describe Sheetah::Utils::MonadicResult::Failure, monadic_result: true do
       expect(result.method(:to_s)).to eq(result.method(:inspect))
     end
   end
+
+  describe "#discard" do
+    it "returns the same variant, without a value" do
+      empty_result = described_class.new
+      filled_result = described_class.new(double)
+
+      expect(empty_result.discard).to eq(empty_result)
+      expect(filled_result.discard).to eq(empty_result)
+    end
+  end
 end
