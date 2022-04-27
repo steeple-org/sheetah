@@ -64,4 +64,64 @@ RSpec.describe Sheetah::Messaging::Message do
     )
     expect(message).not_to eq(other_message)
   end
+
+  describe "#to_s" do
+    let(:code)       { "foo_is_bar" }
+    let(:code_data)  { nil }
+    let(:severity)   { "ERROR" }
+
+    context "when scoped to the sheet" do
+      let(:scope)      { Sheetah::Messaging::SCOPES::SHEET }
+      let(:scope_data) { nil }
+
+      it "can be reduced to a string" do
+        expect(message.to_s).to eq("[SHEET] ERROR: foo_is_bar")
+      end
+    end
+
+    context "when scoped to a row" do
+      let(:scope)      { Sheetah::Messaging::SCOPES::ROW }
+      let(:scope_data) { { row: 42 } }
+
+      it "can be reduced to a string" do
+        expect(message.to_s).to eq("[ROW: 42] ERROR: foo_is_bar")
+      end
+    end
+
+    context "when scoped to a col" do
+      let(:scope)      { Sheetah::Messaging::SCOPES::COL }
+      let(:scope_data) { { col: "AA" } }
+
+      it "can be reduced to a string" do
+        expect(message.to_s).to eq("[COL: AA] ERROR: foo_is_bar")
+      end
+    end
+
+    context "when scoped to a cell" do
+      let(:scope)      { Sheetah::Messaging::SCOPES::CELL }
+      let(:scope_data) { { row: 42, col: "AA" } }
+
+      it "can be reduced to a string" do
+        expect(message.to_s).to eq("[CELL: AA42] ERROR: foo_is_bar")
+      end
+    end
+
+    context "when the scope doesn't make sense" do
+      let(:scope) { "oiqjzfoi" }
+
+      it "can be reduced to a string" do
+        expect(message.to_s).to eq("ERROR: foo_is_bar")
+      end
+    end
+
+    context "when there is some data associated with the code" do
+      let(:scope)      { Sheetah::Messaging::SCOPES::SHEET }
+      let(:scope_data) { nil }
+      let(:code_data) { { foo: "bar" } }
+
+      it "can be reduced to a string" do
+        expect(message.to_s).to eq("[SHEET] ERROR: foo_is_bar {:foo=>\"bar\"}")
+      end
+    end
+  end
 end

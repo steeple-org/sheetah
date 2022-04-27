@@ -47,6 +47,23 @@ module Sheetah
           scope_data == other.scope_data &&
           severity   == other.severity
       end
+
+      def to_s
+        parts = [scoping_to_s, "#{severity}: #{code}", code_data]
+        parts.compact!
+        parts.join(" ")
+      end
+
+      private
+
+      def scoping_to_s
+        case scope
+        when SCOPES::SHEET then "[#{scope}]"
+        when SCOPES::ROW   then "[#{scope}: #{scope_data[:row]}]"
+        when SCOPES::COL   then "[#{scope}: #{scope_data[:col]}]"
+        when SCOPES::CELL  then "[#{scope}: #{scope_data[:col]}#{scope_data[:row]}]"
+        end
+      end
     end
 
     class Messenger
