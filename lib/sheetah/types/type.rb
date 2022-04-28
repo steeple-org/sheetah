@@ -36,6 +36,10 @@ module Sheetah
           @cast_classes.freeze
           super
         end
+
+        def new!(...)
+          new(...).freeze
+        end
       end
 
       self.cast_classes = []

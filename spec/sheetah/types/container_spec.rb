@@ -20,30 +20,30 @@ RSpec.describe Sheetah::Types::Container do
     end
 
     describe "typemap" do
-      def stub_new_type(klass, *args)
-        args << no_args if args.empty?
-        allow(klass).to receive(:new).with(*args).and_return(instance = double)
-        instance
-      end
-
       let(:scalar_type) do
-        stub_new_type(Sheetah::Types::Scalars::Scalar)
+        Sheetah::Types::Scalars::Scalar
       end
 
       let(:string_type) do
-        stub_new_type(Sheetah::Types::Scalars::Scalar)
+        Sheetah::Types::Scalars::String
       end
 
       let(:email_type) do
-        stub_new_type(Sheetah::Types::Scalars::Email)
+        Sheetah::Types::Scalars::Email
       end
 
       let(:boolsy_type) do
-        stub_new_type(Sheetah::Types::Scalars::Boolsy)
+        Sheetah::Types::Scalars::Boolsy
       end
 
       let(:date_string_type) do
-        stub_new_type(Sheetah::Types::Scalars::DateString)
+        Sheetah::Types::Scalars::DateString
+      end
+
+      def stub_new_type(klass, *args)
+        args << no_args if args.empty?
+        allow(klass).to receive(:new!).with(*args).and_return(instance = double)
+        instance
       end
 
       it "is readable" do
@@ -54,28 +54,28 @@ RSpec.describe Sheetah::Types::Container do
       end
 
       example "scalars: scalar" do
-        type = scalar_type
-        expect(container.scalar(:scalar)).to be(type)
+        expect(scalar = container.scalar(:scalar)).to be_a(scalar_type) & be_frozen
+        expect(container.scalar(:scalar)).to be(scalar)
       end
 
       example "scalars: string" do
-        type = string_type
-        expect(container.scalar(:string)).to be(type)
+        expect(string = container.scalar(:string)).to be_a(string_type) & be_frozen
+        expect(container.scalar(:string)).to be(string)
       end
 
       example "scalars: email" do
-        type = email_type
-        expect(container.scalar(:email)).to be(type)
+        expect(email = container.scalar(:email)).to be_a(email_type) & be_frozen
+        expect(container.scalar(:email)).to be(email)
       end
 
       example "scalars: boolsy" do
-        type = boolsy_type
-        expect(container.scalar(:boolsy)).to be(type)
+        expect(boolsy = container.scalar(:boolsy)).to be_a(boolsy_type) & be_frozen
+        expect(container.scalar(:boolsy)).to be(boolsy)
       end
 
       example "scalars: date_string" do
-        type = date_string_type
-        expect(container.scalar(:date_string)).to be(type)
+        expect(date_string = container.scalar(:date_string)).to be_a(date_string_type) & be_frozen
+        expect(container.scalar(:date_string)).to be(date_string)
       end
 
       example "composites: array" do

@@ -13,17 +13,23 @@ require_relative "composites/array_compact"
 module Sheetah
   module Types
     class Container
+      scalar      = Scalars::Scalar.new!
+      string      = Scalars::String.new!
+      email       = Scalars::Email.new!
+      boolsy      = Scalars::Boolsy.new!
+      date_string = Scalars::DateString.new!
+
       DEFAULTS = {
         scalars: {
-          scalar:      -> { Scalars::Scalar.new },
-          string:      -> { Scalars::String.new },
-          email:       -> { Scalars::Email.new },
-          boolsy:      -> { Scalars::Boolsy.new },
-          date_string: -> { Scalars::DateString.new },
+          scalar:      -> { scalar },
+          string:      -> { string },
+          email:       -> { email  },
+          boolsy:      -> { boolsy },
+          date_string: -> { date_string },
         }.freeze,
         composites: {
-          array:         ->(types) { Composites::Array.new(types) },
-          array_compact: ->(types) { Composites::ArrayCompact.new(types) },
+          array:         ->(types) { Composites::Array.new!(types) },
+          array_compact: ->(types) { Composites::ArrayCompact.new!(types) },
         }.freeze,
       }.freeze
 

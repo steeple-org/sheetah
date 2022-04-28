@@ -142,6 +142,13 @@ RSpec.describe Sheetah::Types::Type do
         end
       end
     end
+
+    describe "::new!" do
+      it "initializes a new, frozen type" do
+        type = described_class.new!
+        expect(type).to be_a(described_class) & be_frozen
+      end
+    end
   end
 
   describe "instance API" do
