@@ -50,6 +50,16 @@ module Sheetah
     end
 
     def result
+      missing_columns = @specification.required_columns - @columns.to_a
+
+      unless missing_columns.empty?
+        @failure = true
+
+        missing_columns.each do |column|
+          @messenger.error("missing_column", column.header)
+        end
+      end
+
       if @failure
         Failure()
       else

@@ -8,7 +8,7 @@ require "sheetah/specification"
 
 RSpec.describe Sheetah::Headers, monadic_result: true do
   let(:specification) do
-    instance_double(Sheetah::Specification)
+    instance_double(Sheetah::Specification, required_columns: [])
   end
 
   let(:columns) do

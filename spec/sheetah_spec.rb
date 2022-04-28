@@ -18,7 +18,7 @@ RSpec.describe Sheetah, monadic_result: true do
       attributes: [
         {
           key: :foo,
-          type: :reverse_string,
+          type: :reverse_string!,
         },
         {
           key: :bar,
@@ -29,7 +29,7 @@ RSpec.describe Sheetah, monadic_result: true do
               scalar
               email
               scalar
-              scalar
+              scalar!
             ],
           },
         },
@@ -112,8 +112,9 @@ RSpec.describe Sheetah, monadic_result: true do
     end
   end
 
-  context "when there is a sheet error" do
+  context "when there are sheet errors" do
     before do
+      input[0][0] = "oof"
       input[0][2] = nil
     end
 
@@ -124,7 +125,14 @@ RSpec.describe Sheetah, monadic_result: true do
     it "returns a failure with data" do
       expect(process(input) {}).to have_attributes(
         result: Failure(),
-        messages: [
+        messages: contain_exactly(
+          have_attributes(
+            code: "invalid_header",
+            code_data: "oof",
+            scope: Sheetah::Messaging::SCOPES::COL,
+            scope_data: { col: "A" },
+            severity: Sheetah::Messaging::SEVERITIES::ERROR
+          ),
           have_attributes(
             code: "invalid_header",
             code_data: nil,
@@ -132,7 +140,21 @@ RSpec.describe Sheetah, monadic_result: true do
             scope_data: { col: "C" },
             severity: Sheetah::Messaging::SEVERITIES::ERROR
           ),
-        ]
+          have_attributes(
+            code: "missing_column",
+            code_data: "Foo",
+            scope: Sheetah::Messaging::SCOPES::SHEET,
+            scope_data: nil,
+            severity: Sheetah::Messaging::SEVERITIES::ERROR
+          ),
+          have_attributes(
+            code: "missing_column",
+            code_data: "Bar 5",
+            scope: Sheetah::Messaging::SCOPES::SHEET,
+            scope_data: nil,
+            severity: Sheetah::Messaging::SEVERITIES::ERROR
+          )
+        )
       )
     end
   end

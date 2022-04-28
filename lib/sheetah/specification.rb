@@ -45,6 +45,14 @@ module Sheetah
       nil
     end
 
+    def required_columns
+      @column_by_pattern.each_value.select(&:required?)
+    end
+
+    def optional_columns
+      @column_by_pattern.each_value.reject(&:required?)
+    end
+
     def freeze
       @column_by_pattern.freeze
       super
