@@ -31,9 +31,14 @@ RSpec.describe Sheetah::Types::Scalars::String do
 
       context "when the value is a string" do
         let(:value_is_string) { true }
+        let(:native_string) { double }
 
-        it "is a success" do
-          expect(cast.call(value, messenger)).to eq(value)
+        before do
+          allow(value).to receive(:to_s).and_return(native_string)
+        end
+
+        it "is a success, returning a native string" do
+          expect(cast.call(value, messenger)).to eq(native_string)
         end
       end
 
