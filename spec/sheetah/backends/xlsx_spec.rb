@@ -120,8 +120,8 @@ RSpec.describe Sheetah::Backends::Xlsx do
         expect(sheet.each_header.map(&:value)).to all(be_nil)
       end
 
-      it "doesn't ignore them when detecting the rows" do
-        expect { |b| sheet.each_row(&b) }.to yield_control.exactly(13).times
+      it "ignores them when detecting the rows" do
+        expect { |b| sheet.each_row(&b) }.to yield_control.exactly(3).times
       end
     end
 

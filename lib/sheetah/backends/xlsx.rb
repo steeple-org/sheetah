@@ -1,6 +1,10 @@
 # frozen_string_literal: true
 
+# NOTE: As reference:
+# - {Roo::Excelx::Cell#cell_value} => the "raw" value before Excel's typecasts
+# - {Roo::Excelx::Cell#value} => the "user" value, after Excel's typecasts
 require "roo"
+
 require_relative "../sheet"
 
 module Sheetah
@@ -12,6 +16,7 @@ module Sheetah
         raise Error if path.nil?
 
         @roo = Roo::Excelx.new(path)
+        @is_empty = worksheet.first_row.nil?
         @headers = detect_headers
         @cols_count = @headers.size
       end
@@ -31,19 +36,20 @@ module Sheetah
       def each_row
         return to_enum(:each_row) unless block_given?
 
-        # NOTE: As reference:
-        # - {Roo::Excelx::Cell#cell_value} => the "raw" value before Excel's typecasts
-        # - {Roo::Excelx::Cell#value} => the "user" value, after Excel's typecasts
+        return if @is_empty
 
+        first_row = 2
+        last_row = worksheet.last_row
         row = 0
 
-        worksheet.each_row(offset: 1) do |raw|
+        first_row.upto(last_row) do |cursor|
+          raw = worksheet.row(cursor)
           row += 1
 
           value = Array.new(@cols_count) do |col_idx|
             col = Sheet.int2col(col_idx + 1)
 
-            Cell.new(row: row, col: col, value: raw[col_idx]&.value)
+            Cell.new(row: row, col: col, value: raw[col_idx])
           end
 
           yield Row.new(row: row, value: value)
@@ -65,9 +71,9 @@ module Sheetah
       end
 
       def detect_headers
-        headers = nil
-        worksheet.each_row(max_rows: 0) { |row| headers = row.map(&:value) }
-        headers || []
+        return [] if @is_empty
+
+        worksheet.row(1) || []
       end
     end
   end
