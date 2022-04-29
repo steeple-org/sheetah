@@ -13,8 +13,9 @@ module Sheetah
     class DuplicatedPatternError < Errors::SpecError
     end
 
-    def initialize
+    def initialize(allow_unspecified_columns: false)
       @column_by_pattern = {}
+      @allow_unspecified_columns = allow_unspecified_columns
     end
 
     def set(pattern, column)
@@ -51,6 +52,10 @@ module Sheetah
 
     def optional_columns
       @column_by_pattern.each_value.reject(&:required?)
+    end
+
+    def allow_unspecified_columns?
+      @allow_unspecified_columns
     end
 
     def freeze

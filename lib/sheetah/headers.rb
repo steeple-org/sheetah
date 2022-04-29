@@ -19,6 +19,10 @@ module Sheetah
           header == other.header &&
           column == other.column
       end
+
+      def row_value_index
+        header.row_value_index
+      end
     end
 
     def initialize(specification:, messenger:)
@@ -34,8 +38,11 @@ module Sheetah
         column = @specification.get(header.value)
 
         if column.nil?
-          @failure = true
-          @messenger.error("invalid_header", header.value)
+          unless @specification.allow_unspecified_columns?
+            @failure = true
+            @messenger.error("invalid_header", header.value)
+          end
+
           return
         end
 

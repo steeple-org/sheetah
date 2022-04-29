@@ -17,9 +17,9 @@ RSpec.describe Sheetah::RowProcessor, monadic_result: true do
 
   let(:headers) do
     [
-      instance_double(Sheetah::Headers::Header, column: double),
-      instance_double(Sheetah::Headers::Header, column: double),
-      instance_double(Sheetah::Headers::Header, column: double),
+      instance_double(Sheetah::Headers::Header, column: double, row_value_index: 0),
+      instance_double(Sheetah::Headers::Header, column: double, row_value_index: 1),
+      instance_double(Sheetah::Headers::Header, column: double, row_value_index: 2),
     ]
   end
 

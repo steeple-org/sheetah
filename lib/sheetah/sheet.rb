@@ -55,6 +55,10 @@ module Sheetah
       def ==(other)
         other.is_a?(self.class) && col == other.col && value == other.value
       end
+
+      def row_value_index
+        Sheet.col2int(col) - 1
+      end
     end
 
     class Row

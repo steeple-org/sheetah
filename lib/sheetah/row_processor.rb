@@ -16,7 +16,9 @@ module Sheetah
       builder = RowValueBuilder.new(messenger)
 
       messenger.scope_row!(row.row) do
-        @headers.zip(row.value) do |header, cell|
+        @headers.each do |header|
+          cell = row.value[header.row_value_index]
+
           messenger.scope_col!(cell.col) do
             builder.add(header.column, cell.value)
           end

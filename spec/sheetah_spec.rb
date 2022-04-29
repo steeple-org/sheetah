@@ -13,8 +13,8 @@ RSpec.describe Sheetah, monadic_result: true do
     )
   end
 
-  let(:template) do
-    Sheetah::Template.new(
+  let(:template_opts) do
+    {
       attributes: [
         {
           key: :foo,
@@ -33,8 +33,12 @@ RSpec.describe Sheetah, monadic_result: true do
             ],
           },
         },
-      ]
-    )
+      ],
+    }
+  end
+
+  let(:template) do
+    Sheetah::Template.new(**template_opts)
   end
 
   let(:template_config) do
@@ -112,10 +116,66 @@ RSpec.describe Sheetah, monadic_result: true do
     end
   end
 
-  context "when there are sheet errors" do
+  context "when there are unspecified columns in the sheet" do
     before do
-      input[0][0] = "oof"
-      input[0][2] = nil
+      input.each_index do |idx|
+        input[idx] = input[idx][0..1] + ["oof"] + input[idx][2..] + ["rab"]
+      end
+    end
+
+    context "when the template allows it" do
+      before { template_opts[:allow_unspecified_columns] = true }
+
+      it "ignores the unspecified columns" do
+        results = process_to_a(input)
+
+        expect(results[0].result).to eq(
+          Success(foo: "olleh", bar: [nil, nil, "foo@bar.baz", nil, Float])
+        )
+
+        expect(results[1].result).to eq(
+          Success(foo: "dlrow", bar: [nil, nil, "foo@bar.baz", nil, Float])
+        )
+      end
+    end
+
+    context "when the template doesn't allow it" do
+      before { template_opts[:allow_unspecified_columns] = false }
+
+      it "doesn't yield any row" do
+        expect { |b| process(input, &b) }.not_to yield_control
+      end
+
+      it "returns a failure with data" do
+        expect(process(input) {}).to have_attributes(
+          result: Failure(),
+          messages: contain_exactly(
+            have_attributes(
+              code: "invalid_header",
+              code_data: "oof",
+              scope: Sheetah::Messaging::SCOPES::COL,
+              scope_data: { col: "C" },
+              severity: Sheetah::Messaging::SEVERITIES::ERROR
+            ),
+            have_attributes(
+              code: "invalid_header",
+              code_data: "rab",
+              scope: Sheetah::Messaging::SCOPES::COL,
+              scope_data: { col: "F" },
+              severity: Sheetah::Messaging::SEVERITIES::ERROR
+            )
+          )
+        )
+      end
+    end
+  end
+
+  context "when there are missing columns" do
+    before do
+      input.each do |input|
+        input.delete_at(2)
+        input.delete_at(0)
+      end
     end
 
     it "doesn't yield any row" do
@@ -126,20 +186,6 @@ RSpec.describe Sheetah, monadic_result: true do
       expect(process(input) {}).to have_attributes(
         result: Failure(),
         messages: contain_exactly(
-          have_attributes(
-            code: "invalid_header",
-            code_data: "oof",
-            scope: Sheetah::Messaging::SCOPES::COL,
-            scope_data: { col: "A" },
-            severity: Sheetah::Messaging::SEVERITIES::ERROR
-          ),
-          have_attributes(
-            code: "invalid_header",
-            code_data: nil,
-            scope: Sheetah::Messaging::SCOPES::COL,
-            scope_data: { col: "C" },
-            severity: Sheetah::Messaging::SEVERITIES::ERROR
-          ),
           have_attributes(
             code: "missing_column",
             code_data: "Foo",
