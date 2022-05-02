@@ -124,7 +124,7 @@ RSpec.describe Sheetah, monadic_result: true do
     end
 
     context "when the template allows it" do
-      before { template_opts[:allow_unspecified_columns] = true }
+      before { template_opts[:ignore_unspecified_columns] = true }
 
       it "ignores the unspecified columns" do
         results = process_to_a(input)
@@ -140,7 +140,7 @@ RSpec.describe Sheetah, monadic_result: true do
     end
 
     context "when the template doesn't allow it" do
-      before { template_opts[:allow_unspecified_columns] = false }
+      before { template_opts[:ignore_unspecified_columns] = false }
 
       it "doesn't yield any row" do
         expect { |b| process(input, &b) }.not_to yield_control

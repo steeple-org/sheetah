@@ -26,13 +26,13 @@ module Sheetah
   # specification, and composite attributes will produce as many columns as
   # required by the number of scalar values they hold.
   class Template
-    def initialize(attributes:, allow_unspecified_columns: false)
+    def initialize(attributes:, ignore_unspecified_columns: false)
       @attributes = build_attributes(attributes)
-      @allow_unspecified_columns = allow_unspecified_columns
+      @ignore_unspecified_columns = ignore_unspecified_columns
     end
 
     def apply(config)
-      specification = Specification.new(allow_unspecified_columns: @allow_unspecified_columns)
+      specification = Specification.new(ignore_unspecified_columns: @ignore_unspecified_columns)
 
       @attributes.each do |attribute|
         attribute.each_column(config) do |column|

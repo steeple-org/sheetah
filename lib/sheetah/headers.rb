@@ -38,7 +38,7 @@ module Sheetah
         column = @specification.get(header.value)
 
         if column.nil?
-          unless @specification.allow_unspecified_columns?
+          unless @specification.ignore_unspecified_columns?
             @failure = true
             @messenger.error("invalid_header", header.value)
           end
