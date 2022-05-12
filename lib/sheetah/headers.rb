@@ -37,20 +37,8 @@ module Sheetah
       @messenger.scope_col!(header.col) do
         column = @specification.get(header.value)
 
-        if column.nil?
-          unless @specification.ignore_unspecified_columns?
-            @failure = true
-            @messenger.error("invalid_header", header.value)
-          end
-
-          return
-        end
-
-        unless @columns.add?(column)
-          @failure = true
-          @messenger.error("duplicated_header", header.value)
-          return
-        end
+        return unless add_ensure_column_is_specified(header, column)
+        return unless add_ensure_column_is_unique(header, column)
 
         @headers << Header.new(header, column)
       end
@@ -72,6 +60,28 @@ module Sheetah
       else
         Success(@headers)
       end
+    end
+
+    private
+
+    def add_ensure_column_is_specified(header, column)
+      return true unless column.nil?
+
+      unless @specification.ignore_unspecified_columns?
+        @failure = true
+        @messenger.error("invalid_header", header.value)
+      end
+
+      false
+    end
+
+    def add_ensure_column_is_unique(header, column)
+      return true if @columns.add?(column)
+
+      @failure = true
+      @messenger.error("duplicated_header", header.value)
+
+      false
     end
   end
 end

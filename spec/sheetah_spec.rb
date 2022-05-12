@@ -146,7 +146,7 @@ RSpec.describe Sheetah, monadic_result: true do
         expect { |b| process(input, &b) }.not_to yield_control
       end
 
-      it "returns a failure with data" do
+      it "returns a failure with data" do # rubocop:disable RSpec/ExampleLength
         expect(process(input) {}).to have_attributes(
           result: Failure(),
           messages: contain_exactly(
@@ -182,7 +182,7 @@ RSpec.describe Sheetah, monadic_result: true do
       expect { |b| process(input, &b) }.not_to yield_control
     end
 
-    it "returns a failure with data" do
+    it "returns a failure with data" do # rubocop:disable RSpec/ExampleLength
       expect(process(input) {}).to have_attributes(
         result: Failure(),
         messages: contain_exactly(

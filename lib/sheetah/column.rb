@@ -2,7 +2,14 @@
 
 module Sheetah
   class Column
-    def initialize(key:, type:, index:, header:, header_pattern: nil, required: false)
+    def initialize(
+      key:,
+      type:,
+      index:,
+      header:,
+      header_pattern: nil,
+      required: false
+    )
       @key            = key
       @type           = type
       @index          = index
