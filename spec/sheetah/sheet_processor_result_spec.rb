@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
-require "sheetah/processor_result"
+require "sheetah/sheet_processor_result"
 
-RSpec.describe Sheetah::ProcessorResult do
+RSpec.describe Sheetah::SheetProcessorResult do
   let(:result) { double }
   let(:messages) { double }
 

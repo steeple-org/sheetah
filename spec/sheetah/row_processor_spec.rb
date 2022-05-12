@@ -2,7 +2,6 @@
 
 require "sheetah/messaging"
 require "sheetah/headers"
-require "sheetah/processor_result"
 require "sheetah/row_processor"
 require "sheetah/sheet"
 
@@ -47,6 +46,19 @@ RSpec.describe Sheetah::RowProcessor, monadic_result: true do
     described_class.new(headers: headers, messenger: messenger)
   end
 
+  def expect_headers_add(header, cell)
+    expect(row_value_builder).to receive(:add).with(header.column, cell.value).ordered do
+      expect(row_messenger).to have_attributes(
+        scope: Sheetah::Messaging::SCOPES::CELL,
+        scope_data: { row: row.row, col: cell.col }
+      )
+    end
+  end
+
+  def expect_headers_result
+    expect(row_value_builder).to receive(:result).ordered.and_return(row_value_builder_result)
+  end
+
   before do
     allow(Sheetah::RowValueBuilder).to(
       receive(:new).with(row_messenger).and_return(row_value_builder)
@@ -54,19 +66,14 @@ RSpec.describe Sheetah::RowProcessor, monadic_result: true do
   end
 
   it "processes the row and wraps the result with a dedicated set of messages" do
-    3.times do |i|
-      expect(row_value_builder).to receive(:add).with(headers[i].column, cells[i].value).ordered do
-        expect(row_messenger).to have_attributes(
-          scope: Sheetah::Messaging::SCOPES::CELL,
-          scope_data: { row: row.row, col: cells[i].col }
-        )
-      end
-    end
-
-    expect(row_value_builder).to receive(:result).ordered.and_return(row_value_builder_result)
+    expect_headers_add(headers[0], cells[0])
+    expect_headers_add(headers[1], cells[1])
+    expect_headers_add(headers[2], cells[2])
+    expect_headers_result
 
     expect(processor.call(row)).to eq(
-      Sheetah::ProcessorResult.new(
+      Sheetah::RowProcessorResult.new(
+        row: row.row,
         result: row_value_builder_result,
         messages: row_messenger.messages
       )

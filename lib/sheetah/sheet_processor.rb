@@ -2,9 +2,9 @@
 
 require_relative "headers"
 require_relative "messaging"
-require_relative "processor_result"
 require_relative "row_processor"
 require_relative "sheet"
+require_relative "sheet_processor_result"
 require_relative "utils/monadic_result"
 
 module Sheetah
@@ -54,7 +54,7 @@ module Sheetah
         messenger.error(failure.msg_code) if failure.respond_to?(:msg_code)
       end
 
-      ProcessorResult.new(result: result.discard, messages: messenger.messages)
+      SheetProcessorResult.new(result: result.discard, messages: messenger.messages)
     end
   end
 end

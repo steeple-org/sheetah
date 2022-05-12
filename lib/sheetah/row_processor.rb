@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative "processor_result"
+require_relative "row_processor_result"
 require_relative "row_value_builder"
 
 module Sheetah
@@ -25,7 +25,17 @@ module Sheetah
         end
       end
 
-      ProcessorResult.new(result: builder.result, messages: messenger.messages)
+      build_result(row, builder, messenger)
+    end
+
+    private
+
+    def build_result(row, builder, messenger)
+      RowProcessorResult.new(
+        row: row.row,
+        result: builder.result,
+        messages: messenger.messages
+      )
     end
   end
 end

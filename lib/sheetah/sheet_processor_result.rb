@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Sheetah
-  class ProcessorResult
+  class SheetProcessorResult
     def initialize(result:, messages: [])
       @result = result
       @messages = messages
@@ -10,7 +10,9 @@ module Sheetah
     attr_reader :result, :messages
 
     def ==(other)
-      other.is_a?(self.class) && result == other.result && messages == other.messages
+      other.is_a?(self.class) &&
+        result == other.result &&
+        messages == other.messages
     end
   end
 end

@@ -72,7 +72,7 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
 
     it "is an empty failure, with messages" do
       expect(call).to eq(
-        Sheetah::ProcessorResult.new(
+        Sheetah::SheetProcessorResult.new(
           result: Failure(),
           messages: [
             Sheetah::Messaging::Message.new(
@@ -162,7 +162,7 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
       result = call
 
       expect(result).to eq(
-        Sheetah::ProcessorResult.new(
+        Sheetah::SheetProcessorResult.new(
           result: Failure(),
           messages: messenger.messages
         )
@@ -203,7 +203,7 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
       result = call
 
       expect(result).to eq(
-        Sheetah::ProcessorResult.new(
+        Sheetah::SheetProcessorResult.new(
           result: Success(),
           messages: messenger.messages
         )
