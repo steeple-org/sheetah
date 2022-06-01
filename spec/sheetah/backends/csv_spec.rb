@@ -4,6 +4,7 @@ require "sheetah/backends/csv"
 require "support/shared/sheet_factories"
 require "csv"
 require "stringio"
+require "tempfile"
 
 RSpec.describe Sheetah::Backends::Csv do
   include_context "sheet_factories"
@@ -38,6 +39,36 @@ RSpec.describe Sheetah::Backends::Csv do
 
   def new_sheet(...)
     described_class.new(io: stub_sheet(...))
+  end
+
+  describe "::register" do
+    let(:registry) { Sheetah::BackendsRegistry.new }
+
+    before do
+      described_class.register(registry)
+    end
+
+    it "matches any so-called IO and an optional encoding" do
+      io = double
+
+      expect(registry.get(io: io)).to eq(described_class)
+      expect(registry.get(io: io, encoding: "UTF-8")).to eq(described_class)
+      expect(registry.get(io: io, encoding: Encoding::UTF_8)).to eq(described_class)
+    end
+
+    it "matches a CSV path and an optional encoding" do
+      expect(registry.get(path: "foo.csv")).to eq(described_class)
+      expect(registry.get(path: "foo.csv", encoding: "UTF-8")).to eq(described_class)
+      expect(registry.get(path: "foo.csv", encoding: Encoding::UTF_8)).to eq(described_class)
+    end
+
+    it "doesn't match any other path" do
+      expect(registry.get(path: "foo.tsv")).to be_nil
+    end
+
+    it "doesn't match extra args" do
+      expect(registry.get(2, path: "foo.csv")).to be_nil
+    end
   end
 
   describe "#initialize" do

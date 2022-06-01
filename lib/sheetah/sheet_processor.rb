@@ -15,11 +15,11 @@ module Sheetah
       @specification = specification
     end
 
-    def call(*args, backend:, **opts)
+    def call(*args, **opts)
       messenger = Messaging::Messenger.new
 
       result = Do() do
-        backend.open(*args, **opts) do |sheet|
+        Backends.open(*args, **opts) do |sheet|
           row_processor = build_row_processor(sheet, messenger)
 
           sheet.each_row do |row|
