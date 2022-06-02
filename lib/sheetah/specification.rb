@@ -38,9 +38,7 @@ module Sheetah
       return if header.nil?
 
       @column_by_pattern.each do |pattern, column|
-        if (pattern == header) || (pattern.is_a?(Regexp) && pattern.match?(header))
-          return column
-        end
+        return column if pattern === header # rubocop:disable Style/CaseEquality
       end
 
       nil
