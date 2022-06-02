@@ -8,9 +8,9 @@ RSpec.describe Sheetah::Types::Scalars::BoolsyCast do
   it_behaves_like "cast_class"
 
   describe "#initialize" do
-    it "setups default, conventional boolsy values" do
+    it "setups blank boolsy values by default" do
       expect(described_class.new).to eq(
-        described_class.new(truthy: [], falsy: [], strict: false)
+        described_class.new(truthy: [], falsy: [])
       )
     end
   end
@@ -76,63 +76,6 @@ RSpec.describe Sheetah::Types::Scalars::BoolsyCast do
 
       it "fails with a message" do
         expect_failure
-      end
-    end
-
-    describe "strictness" do
-      subject(:cast) { described_class.new(truthy: truthy, falsy: falsy, strict: strict) }
-
-      def stub_no_inclusions(value)
-        stub_inclusion(truthy, value, false)
-        stub_inclusion(falsy, value, false)
-      end
-
-      context "when strict" do
-        let(:strict) { true }
-
-        it "doesn't recognize `true` in spite of the user-defined truthy values" do
-          stub_no_inclusions(value = true)
-          expect_failure(value)
-        end
-
-        it "doesn't recognize `false` in spite of the user-defined falsy values" do
-          stub_no_inclusions(value = false)
-          expect_failure(value)
-        end
-
-        it "doesn't recognize `1` in spite of the user-defined truthy values" do
-          stub_no_inclusions(value = 1)
-          expect_failure(value)
-        end
-
-        it "doesn't recognize `0` in spite of the user-defined falsy values" do
-          stub_no_inclusions(value = 0)
-          expect_failure(value)
-        end
-      end
-
-      context "when non-strict" do
-        let(:strict) { false }
-
-        it "does recognize `true` in spite of the user-defined truthy values" do
-          stub_no_inclusions(value = true)
-          expect_truthy(value)
-        end
-
-        it "does recognize `false` in spite of the user-defined falsy values" do
-          stub_no_inclusions(value = false)
-          expect_falsy(value)
-        end
-
-        it "does recognize `1` in spite of the user-defined truthy values" do
-          stub_no_inclusions(value = 1)
-          expect_truthy(value)
-        end
-
-        it "does recognize `0` in spite of the user-defined falsy values" do
-          stub_no_inclusions(value = 0)
-          expect_falsy(value)
-        end
       end
     end
   end
