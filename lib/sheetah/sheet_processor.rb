@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "backends"
 require_relative "headers"
 require_relative "messaging"
 require_relative "row_processor"
