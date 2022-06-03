@@ -11,10 +11,11 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = ">= 2.7.0"
 
-  # TODO: fill these URIs when they are available
-  # spec.metadata["homepage_uri"]    =
-  # spec.metadata["changelog_uri"]   =
-  # spec.metadata["source_code_uri"] =
+  spec.metadata["homepage_uri"]      = "https://github.com/steeple-org/sheetah"
+  spec.metadata["source_code_uri"]   = "https://github.com/steeple-org/sheetah"
+  spec.metadata["bug_tracker_uri"]   = "https://github.com/steeple-org/sheetah/issues"
+  spec.metadata["changelog_uri"]     = "https://github.com/steeple-org/sheetah/blob/master/CHANGELOG.md"
+  spec.metadata["documentation_uri"] = "https://github.com/steeple-org/sheetah/blob/master/README.md"
 
   # All privileged operations by any of the owners require OTP.
   spec.metadata["rubygems_mfa_required"] = "true"
