@@ -30,11 +30,18 @@ module Sheetah
 
       def self.register(registry = Backends.registry)
         registry.set(self) do |args, opts|
-          args in []
-          opts in { io: _, **nil } | \
-                  { io: _, encoding: String | Encoding, **nil } | \
-                  { path: /\.csv$/i, **nil } | \
-                  { path: /\.csv$/i, encoding: String | Encoding, **nil }
+          next false unless args.empty?
+
+          case opts
+          in { io: _, **nil } | \
+             { io: _, encoding: String | Encoding, **nil } | \
+             { path: /\.csv$/i, **nil } | \
+             { path: /\.csv$/i, encoding: String | Encoding, **nil }
+          then
+            true
+          else
+            false
+          end
         end
       end
 

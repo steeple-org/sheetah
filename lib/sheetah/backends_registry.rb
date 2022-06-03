@@ -13,11 +13,7 @@ module Sheetah
 
     def get(*args, **opts)
       @registry.each do |backend, matcher|
-        matcher.call(args, opts)
-      rescue NoMatchingPatternError
-        next
-      else
-        return backend
+        return backend if matcher.call(args, opts)
       end
 
       nil

@@ -15,8 +15,14 @@ module Sheetah
 
       def self.register(registry = Backends.registry)
         registry.set(self) do |args, opts|
-          args in []
-          opts in { path: /\.xlsx$/i, **nil }
+          next false unless args.empty?
+
+          case opts
+          in { path: /\.xlsx$/i, **nil }
+            true
+          else
+            false
+          end
         end
       end
 

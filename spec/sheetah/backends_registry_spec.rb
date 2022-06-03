@@ -10,13 +10,13 @@ RSpec.describe Sheetah::BackendsRegistry do
 
   before do
     registry.set(backend0) do |args, opts|
-      args in [[1, 2, Symbol]]
-      opts in { foo: Hash }
+      ok =  (case args; in [[1, 2, Symbol]] then true; else false; end)
+      ok && (case opts; in { foo: Hash }    then true; else false; end)
     end
 
     registry.set(backend1) do |args, opts|
-      args in []
-      opts in { path: /\.csv$/ }
+      ok =  (case args; in []                 then true; else false; end)
+      ok && (case opts; in { path: /\.csv$/ } then true; else false; end)
     end
   end
 
@@ -29,8 +29,8 @@ RSpec.describe Sheetah::BackendsRegistry do
 
     it "can overwrite a previous backend matcher" do
       registry.set(backend0) do |args, opts|
-        args in ["foo"]
-        opts in {}
+        ok =  (case args; in ["foo"] then true; else false; end)
+        ok && (case opts; in {}      then true; else false; end)
       end
 
       expect(registry.get("foo")).to be(backend0)
