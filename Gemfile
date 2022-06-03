@@ -11,12 +11,12 @@ gem "rspec", "~> 3.11"
 gem "simplecov", "~> 0.21.2"
 
 # A Ruby static code analyzer and formatter
-gem "rubocop", "~> 1.28"
-gem "rubocop-performance", "~> 1.13"
-gem "rubocop-rspec", "~> 2.10"
+gem "rubocop", "~> 1.30"
+gem "rubocop-performance", "~> 1.14"
+gem "rubocop-rspec", "~> 2.11"
 
 # A Ruby documentation tool
-gem "yard", "~> 0.9.27"
+gem "yard", "~> 0.9.28"
 
 # An optional library, used to parse XLSX documents when needed
 gem "roo", "~> 2.9"
