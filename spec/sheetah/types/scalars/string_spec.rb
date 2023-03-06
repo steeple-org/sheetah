@@ -46,7 +46,11 @@ RSpec.describe Sheetah::Types::Scalars::String do
         let(:value_is_string) { false }
 
         it "is a failure" do
-          expect { cast.call(value, messenger) }.to throw_symbol(:failure, "must_be_string")
+          expect do
+            cast.call(value, messenger)
+          end.to throw_symbol(
+            :failure, Sheetah::Messaging::Messages::MustBeString.new
+          )
         end
       end
     end

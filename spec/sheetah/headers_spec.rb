@@ -26,8 +26,8 @@ RSpec.describe Sheetah::Headers, monadic_result: true do
   end
 
   let(:sheet_headers) do
-    Array.new(5) do
-      instance_double(Sheetah::Sheet::Header, col: double, value: double)
+    Array.new(5) do |i|
+      instance_double(Sheetah::Sheet::Header, col: "FOO", value: "header#{i}")
     end
   end
 
@@ -94,16 +94,14 @@ RSpec.describe Sheetah::Headers, monadic_result: true do
       end
 
       it "messages the error" do
-        expect(messenger.messages).to eq(
-          [
-            Sheetah::Messaging::Message.new(
-              severity: "ERROR",
-              code: "invalid_header",
-              code_data: sheet_headers[4].value,
-              scope: "COL",
-              scope_data: { col: sheet_headers[4].col }
-            ),
-          ]
+        expect(messenger.messages).to contain_exactly(
+          be_a(Sheetah::Messaging::Message) & have_attributes(
+            severity: "ERROR",
+            code: "invalid_header",
+            code_data: sheet_headers[4].value,
+            scope: "COL",
+            scope_data: { col: sheet_headers[4].col }
+          )
         )
       end
     end
@@ -120,16 +118,14 @@ RSpec.describe Sheetah::Headers, monadic_result: true do
       end
 
       it "considers the underlying column, not the header" do
-        expect(messenger.messages).to eq(
-          [
-            Sheetah::Messaging::Message.new(
-              severity: "ERROR",
-              code: "duplicated_header",
-              code_data: sheet_headers[1].value,
-              scope: "COL",
-              scope_data: { col: sheet_headers[1].col }
-            ),
-          ]
+        expect(messenger.messages).to contain_exactly(
+          be_a(Sheetah::Messaging::Message) & have_attributes(
+            severity: "ERROR",
+            code: "duplicated_header",
+            code_data: sheet_headers[1].value,
+            scope: "COL",
+            scope_data: { col: sheet_headers[1].col }
+          )
         )
       end
     end

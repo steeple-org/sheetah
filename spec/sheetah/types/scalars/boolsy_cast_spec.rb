@@ -42,8 +42,12 @@ RSpec.describe Sheetah::Types::Scalars::BoolsyCast do
     end
 
     def expect_failure(value = self.value)
-      expect(messenger).to receive(:error).with("must_be_boolsy", value: value.inspect)
-      expect { cast.call(value, messenger) }.to throw_symbol(:failure, nil)
+      expect do
+        cast.call(value, messenger)
+      end.to throw_symbol(
+        :failure,
+        Sheetah::Messaging::Messages::MustBeBoolsy.new(code_data: { value: value.inspect })
+      )
     end
 
     context "when the value is truthy" do

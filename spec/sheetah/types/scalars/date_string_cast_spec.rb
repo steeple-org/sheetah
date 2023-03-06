@@ -44,8 +44,12 @@ RSpec.describe Sheetah::Types::Scalars::DateStringCast do
         let(:accept_date) { false }
 
         it "fails with an error" do
-          expect(messenger).to receive(:error).with("must_be_date", format: default_fmt)
-          expect { cast.call(value, messenger) }.to throw_symbol(:failure, nil)
+          expect do
+            cast.call(value, messenger)
+          end.to throw_symbol(
+            :failure,
+            Sheetah::Messaging::Messages::MustBeDate.new(code_data: { format: default_fmt })
+          )
         end
       end
     end
@@ -73,8 +77,12 @@ RSpec.describe Sheetah::Types::Scalars::DateStringCast do
         end
 
         it "fails with an error" do
-          expect(messenger).to receive(:error).with("must_be_date", format: date_fmt)
-          expect { cast.call(value, messenger) }.to throw_symbol(:failure, nil)
+          expect do
+            cast.call(value, messenger)
+          end.to throw_symbol(
+            :failure,
+            Sheetah::Messaging::Messages::MustBeDate.new(code_data: { format: date_fmt })
+          )
         end
       end
 
@@ -84,8 +92,12 @@ RSpec.describe Sheetah::Types::Scalars::DateStringCast do
         end
 
         it "fails with an error" do
-          expect(messenger).to receive(:error).with("must_be_date", format: date_fmt)
-          expect { cast.call(value, messenger) }.to throw_symbol(:failure, nil)
+          expect do
+            cast.call(value, messenger)
+          end.to throw_symbol(
+            :failure,
+            Sheetah::Messaging::Messages::MustBeDate.new(code_data: { format: date_fmt })
+          )
         end
       end
     end
@@ -96,8 +108,12 @@ RSpec.describe Sheetah::Types::Scalars::DateStringCast do
       end
 
       it "fails with an error" do
-        expect(messenger).to receive(:error).with("must_be_date", format: default_fmt)
-        expect { cast.call(value, messenger) }.to throw_symbol(:failure, nil)
+        expect do
+          cast.call(value, messenger)
+        end.to throw_symbol(
+          :failure,
+          Sheetah::Messaging::Messages::MustBeDate.new(code_data: { format: default_fmt })
+        )
       end
     end
   end

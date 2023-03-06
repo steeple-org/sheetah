@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 require_relative "../../utils/cell_string_cleaner"
+require_relative "../../messaging/messages/must_exist"
+require_relative "../../messaging/messages/cleaned_string"
 require_relative "../cast"
 
 module Sheetah
@@ -28,7 +30,7 @@ module Sheetah
           if @nullable
             throw :success, nil
           else
-            throw :failure, "must_exist"
+            throw :failure, Messaging::Messages::MustExist.new
           end
         end
 
@@ -37,7 +39,7 @@ module Sheetah
 
           clean_string = Utils::CellStringCleaner.call(value)
 
-          messenger.warn("cleaned_string") if clean_string != value
+          messenger.warn(Messaging::Messages::CleanedString.new) if clean_string != value
 
           clean_string
         end

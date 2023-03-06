@@ -1,14 +1,12 @@
 # frozen_string_literal: true
 
 require_relative "backends_registry"
+require_relative "messaging/messages/no_applicable_backend"
 require_relative "utils/monadic_result"
 
 module Sheetah
   module Backends
     @registry = BackendsRegistry.new
-
-    SimpleError = Struct.new(:msg_code)
-    private_constant :SimpleError
 
     class << self
       attr_reader :registry
@@ -17,7 +15,9 @@ module Sheetah
         backend = opts.delete(:backend) || registry.get(*args, **opts)
 
         if backend.nil?
-          return Utils::MonadicResult::Failure.new(SimpleError.new("no_applicable_backend"))
+          return Utils::MonadicResult::Failure.new(
+            Messaging::Messages::NoApplicableBackend.new
+          )
         end
 
         backend.open(*args, **opts, &block)

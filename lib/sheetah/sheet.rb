@@ -2,6 +2,7 @@
 
 require_relative "sheet/col_converter"
 require_relative "errors/error"
+require_relative "messaging/messages/sheet_error"
 require_relative "utils/monadic_result"
 
 module Sheetah
@@ -42,8 +43,8 @@ module Sheetah
     end
 
     class Error < Errors::Error
-      def msg_code
-        "sheet_error"
+      def to_message
+        Messaging::Messages::SheetError.new
       end
     end
 

@@ -354,34 +354,24 @@ RSpec.describe Sheetah::Messaging::Messenger do
     let(:code) { double }
     let(:code_data) { double }
 
+    let(:message) do
+      Sheetah::Messaging::Message.new(code: code, code_data: code_data)
+    end
+
     let(:messenger) { described_class.new(scope: scope, scope_data: scope_data) }
 
     describe "#warn" do
       it "returns the receiver" do
-        expect(messenger.warn(code, code_data)).to be(messenger)
+        expect(messenger.warn(message)).to be(messenger)
       end
 
       it "adds the code & code_data as a warning" do
-        messenger.warn(code, code_data)
+        messenger.warn(message)
 
         expect(messenger.messages).to contain_exactly(
           Sheetah::Messaging::Message.new(
             code: code,
             code_data: code_data,
-            scope: scope,
-            scope_data: scope_data,
-            severity: severities::WARN
-          )
-        )
-      end
-
-      it "may do without code_data" do
-        messenger.warn(code)
-
-        expect(messenger.messages).to contain_exactly(
-          Sheetah::Messaging::Message.new(
-            code: code,
-            code_data: nil,
             scope: scope,
             scope_data: scope_data,
             severity: severities::WARN
@@ -392,30 +382,16 @@ RSpec.describe Sheetah::Messaging::Messenger do
 
     describe "#error" do
       it "returns the receiver" do
-        expect(messenger.error(code, code_data)).to be(messenger)
+        expect(messenger.error(message)).to be(messenger)
       end
 
       it "adds the code & code_data as an error" do
-        messenger.error(code, code_data)
+        messenger.error(message)
 
         expect(messenger.messages).to contain_exactly(
           Sheetah::Messaging::Message.new(
             code: code,
             code_data: code_data,
-            scope: scope,
-            scope_data: scope_data,
-            severity: severities::ERROR
-          )
-        )
-      end
-
-      it "may do without code_data" do
-        messenger.error(code)
-
-        expect(messenger.messages).to contain_exactly(
-          Sheetah::Messaging::Message.new(
-            code: code,
-            code_data: nil,
             scope: scope,
             scope_data: scope_data,
             severity: severities::ERROR

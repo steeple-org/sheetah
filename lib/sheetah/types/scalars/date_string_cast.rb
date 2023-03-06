@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "date"
+require_relative "../../messaging/messages/must_be_date"
 require_relative "../cast"
 
 module Sheetah
@@ -17,7 +18,7 @@ module Sheetah
           @accept_date = accept_date
         end
 
-        def call(value, messenger)
+        def call(value, _messenger)
           case value
           when ::Date
             return value if @accept_date
@@ -26,8 +27,7 @@ module Sheetah
             return date if date
           end
 
-          messenger.error("must_be_date", format: @date_fmt)
-          throw :failure
+          throw :failure, Messaging::Messages::MustBeDate.new(code_data: { format: @date_fmt })
         end
 
         private

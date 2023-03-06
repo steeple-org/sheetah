@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "scalar"
+require_relative "../../messaging/messages/must_be_string"
 
 module Sheetah
   module Types
@@ -10,7 +11,7 @@ module Sheetah
         # is an instance of a String subclass
         next value.to_s if value.is_a?(::String)
 
-        throw :failure, "must_be_string"
+        throw :failure, Messaging::Messages::MustBeString.new
       end
     end
   end

@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 require_relative "constants"
-require_relative "message"
 
 module Sheetah
   module Messaging
@@ -82,24 +81,24 @@ module Sheetah
         dup.scope_col!(...)
       end
 
-      def warn(code, data = nil)
-        add(SEVERITIES::WARN, code, data)
+      def warn(message)
+        add(message, severity: SEVERITIES::WARN)
       end
 
-      def error(code, data = nil)
-        add(SEVERITIES::ERROR, code, data)
+      def error(message)
+        add(message, severity: SEVERITIES::ERROR)
       end
 
       private
 
-      def add(severity, code, data)
-        messages << Message.new(
-          code: code,
-          code_data: data,
-          scope: @scope,
-          scope_data: @scope_data,
-          severity: severity
-        )
+      def add(message, severity:)
+        message.scope = @scope
+        message.scope_data = @scope_data
+        message.severity = severity
+
+        message.validate
+
+        messages << message
 
         self
       end

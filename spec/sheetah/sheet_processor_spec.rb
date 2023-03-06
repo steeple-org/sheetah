@@ -98,11 +98,11 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
 
   context "when there is a sheet error" do
     let(:error) do
-      instance_double(Sheetah::Sheet::Error, msg_code: code)
+      instance_double(Sheetah::Sheet::Error, to_message: message)
     end
 
-    let(:code) do
-      double
+    let(:message) do
+      Sheetah::Messaging::Message.new(code: double, code_data: double)
     end
 
     before do
@@ -115,8 +115,8 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
           result: Failure(),
           messages: [
             Sheetah::Messaging::Message.new(
-              code: code,
-              code_data: nil,
+              code: message.code,
+              code_data: message.code_data,
               scope: "SHEET",
               scope_data: nil,
               severity: "ERROR"
