@@ -134,25 +134,26 @@ RSpec.describe Sheetah::Specification do
     end
   end
 
-  describe "errors" do
-    example "invalid pattern" do
-      expect(described_class::InvalidPatternError).to have_attributes(
-        superclass: Sheetah::Errors::SpecError,
-        msg_code: "sheetah.specification.invalid_pattern_error"
+  describe "::InvalidPatternError" do
+    it "is some kind of SpecError" do
+      expect(described_class::InvalidPatternError).to(
+        have_attributes(superclass: Sheetah::Errors::SpecError)
       )
     end
+  end
 
-    example "mutable pattern" do
-      expect(described_class::MutablePatternError).to have_attributes(
-        superclass: Sheetah::Errors::SpecError,
-        msg_code: "sheetah.specification.mutable_pattern_error"
+  describe "::MutablePatternError" do
+    it "is some kind of SpecError" do
+      expect(described_class::MutablePatternError).to(
+        have_attributes(superclass: Sheetah::Errors::SpecError)
       )
     end
+  end
 
-    example "duplicated pattern" do
-      expect(described_class::DuplicatedPatternError).to have_attributes(
-        superclass: Sheetah::Errors::SpecError,
-        msg_code: "sheetah.specification.duplicated_pattern_error"
+  describe "::DuplicatedPatternError" do
+    it "is some kind of SpecError" do
+      expect(described_class::DuplicatedPatternError).to(
+        have_attributes(superclass: Sheetah::Errors::SpecError)
       )
     end
   end

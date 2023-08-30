@@ -42,6 +42,9 @@ module Sheetah
     end
 
     class Error < Errors::Error
+      def msg_code
+        "sheet_error"
+      end
     end
 
     class Header

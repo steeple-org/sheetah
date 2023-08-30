@@ -3,7 +3,7 @@
 require "sheetah/errors/spec_error"
 
 RSpec.describe Sheetah::Errors::SpecError do
-  it "has a msg_code" do
-    expect(described_class.msg_code).to eq("sheetah.errors.spec_error")
+  it "is some kind of Error" do
+    expect(described_class).to have_attributes(superclass: Sheetah::Errors::Error)
   end
 end

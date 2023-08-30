@@ -423,31 +423,5 @@ RSpec.describe Sheetah::Messaging::Messenger do
         )
       end
     end
-
-    describe "#exception" do
-      let(:e) { double }
-
-      before do
-        allow(e).to receive(:msg_code).and_return(code)
-      end
-
-      it "returns the receiver" do
-        expect(messenger.exception(e)).to be(messenger)
-      end
-
-      it "adds the exception's msg_code as an error" do
-        messenger.exception(e)
-
-        expect(messenger.messages).to contain_exactly(
-          Sheetah::Messaging::Message.new(
-            code: code,
-            code_data: nil,
-            scope: scope,
-            scope_data: scope_data,
-            severity: severities::ERROR
-          )
-        )
-      end
-    end
   end
 end

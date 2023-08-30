@@ -90,10 +90,6 @@ module Sheetah
         add(SEVERITIES::ERROR, code, data)
       end
 
-      def exception(error)
-        error(error.msg_code)
-      end
-
       private
 
       def add(severity, code, data)
