@@ -12,7 +12,7 @@ module Sheetah
 
     def header(key, index)
       header = key.to_s.capitalize
-      header = index ? "#{header} #{index + 1}" : header
+      header = "#{header} #{index + 1}" if index
 
       pattern = /^#{header}$/i
 

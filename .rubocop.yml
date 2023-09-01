@@ -41,6 +41,9 @@ RSpec/ContextWording:
 RSpec/ExampleLength:
   Max: 15
 
+RSpec/IndexedLet:
+  Enabled: false
+
 RSpec/MessageSpies:
   Enabled: false
 

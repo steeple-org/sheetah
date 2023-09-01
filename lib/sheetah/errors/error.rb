@@ -28,7 +28,7 @@ module Sheetah
           end
 
           msg_code = name.dup
-          msg_code.gsub!(/::/, ".")
+          msg_code.gsub!("::", ".")
           msg_code.gsub!(/([A-Z\d]+)([A-Z][a-z])/, '\1_\2')
           msg_code.gsub!(/([a-z\d])([A-Z])/, '\1_\2')
           msg_code.downcase!

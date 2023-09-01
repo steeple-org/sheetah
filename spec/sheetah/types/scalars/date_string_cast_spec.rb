@@ -29,7 +29,7 @@ RSpec.describe Sheetah::Types::Scalars::DateStringCast do
       end
 
       before do
-        allow(::Date).to receive(:===).with(value).and_return(true)
+        allow(Date).to receive(:===).with(value).and_return(true)
       end
 
       context "when accepting Date" do
