@@ -10,7 +10,7 @@ RSpec.describe Sheetah::Messaging::Messages::DuplicatedHeader do
   it "may be valid" do
     msg = described_class.new(
       code: "duplicated_header",
-      code_data: "header_foo",
+      code_data: { value: "header_foo" },
       scope: "COL",
       scope_data: { col: "FOO" },
       validatable: true

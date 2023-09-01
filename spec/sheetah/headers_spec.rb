@@ -98,7 +98,7 @@ RSpec.describe Sheetah::Headers, monadic_result: true do
           be_a(Sheetah::Messaging::Message) & have_attributes(
             severity: "ERROR",
             code: "invalid_header",
-            code_data: sheet_headers[4].value,
+            code_data: { value: sheet_headers[4].value },
             scope: "COL",
             scope_data: { col: sheet_headers[4].col }
           )
@@ -122,7 +122,7 @@ RSpec.describe Sheetah::Headers, monadic_result: true do
           be_a(Sheetah::Messaging::Message) & have_attributes(
             severity: "ERROR",
             code: "duplicated_header",
-            code_data: sheet_headers[1].value,
+            code_data: { value: sheet_headers[1].value },
             scope: "COL",
             scope_data: { col: sheet_headers[1].col }
           )

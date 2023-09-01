@@ -152,14 +152,14 @@ RSpec.describe Sheetah, monadic_result: true do
           messages: contain_exactly(
             have_attributes(
               code: "invalid_header",
-              code_data: "oof",
+              code_data: { value: "oof" },
               scope: Sheetah::Messaging::SCOPES::COL,
               scope_data: { col: "C" },
               severity: Sheetah::Messaging::SEVERITIES::ERROR
             ),
             have_attributes(
               code: "invalid_header",
-              code_data: "rab",
+              code_data: { value: "rab" },
               scope: Sheetah::Messaging::SCOPES::COL,
               scope_data: { col: "F" },
               severity: Sheetah::Messaging::SEVERITIES::ERROR
@@ -188,14 +188,14 @@ RSpec.describe Sheetah, monadic_result: true do
         messages: contain_exactly(
           have_attributes(
             code: "missing_column",
-            code_data: "Foo",
+            code_data: { value: "Foo" },
             scope: Sheetah::Messaging::SCOPES::SHEET,
             scope_data: nil,
             severity: Sheetah::Messaging::SEVERITIES::ERROR
           ),
           have_attributes(
             code: "missing_column",
-            code_data: "Bar 5",
+            code_data: { value: "Bar 5" },
             scope: Sheetah::Messaging::SCOPES::SHEET,
             scope_data: nil,
             severity: Sheetah::Messaging::SEVERITIES::ERROR
