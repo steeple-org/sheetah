@@ -12,7 +12,12 @@ module Sheetah
           col
 
           def validate_code_data(message)
-            message.code_data.is_a?(String)
+            case message.code_data
+            in { value: String }
+              true
+            else
+              false
+            end
           end
         end
       end

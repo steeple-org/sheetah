@@ -55,7 +55,7 @@ module Sheetah
 
         missing_columns.each do |column|
           @messenger.error(
-            Messaging::Messages::MissingColumn.new(code_data: column.header)
+            Messaging::Messages::MissingColumn.new(code_data: { value: column.header })
           )
         end
       end
@@ -75,7 +75,7 @@ module Sheetah
       unless @specification.ignore_unspecified_columns?
         @failure = true
         @messenger.error(
-          Messaging::Messages::InvalidHeader.new(code_data: header.value)
+          Messaging::Messages::InvalidHeader.new(code_data: { value: header.value })
         )
       end
 
@@ -87,7 +87,7 @@ module Sheetah
 
       @failure = true
       @messenger.error(
-        Messaging::Messages::DuplicatedHeader.new(code_data: header.value)
+        Messaging::Messages::DuplicatedHeader.new(code_data: { value: header.value })
       )
 
       false
