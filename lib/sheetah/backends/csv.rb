@@ -6,31 +6,42 @@ require_relative "../sheet"
 
 module Sheetah
   module Backends
-    # Expect:
-    # - UTF-8 without BOM, or the correct encoding given explicitly
-    # - line endings as \n or \r\n
-    # - comma-separated
-    # - quoted with "
     class Csv
       include Sheet
 
-      class ArgumentError < Error
+      class InvalidEncodingError < Error
       end
 
-      class EncodingError < Error
+      class InvalidCSVError < Error
       end
 
-      CSV_OPTS = {
+      DEFAULTS = {
+        row_sep: :auto,
         col_sep: ",",
         quote_char: '"',
       }.freeze
 
-      private_constant :CSV_OPTS
+      private_constant :DEFAULTS
 
-      def initialize(io: nil, path: nil, encoding: nil)
-        io = setup_io(io, path, encoding)
+      def self.defaults
+        DEFAULTS
+      end
 
-        @csv = CSV.new(io, **CSV_OPTS)
+      def initialize(
+        io,
+        row_sep: self.class.defaults[:row_sep],
+        col_sep: self.class.defaults[:col_sep],
+        quote_char: self.class.defaults[:quote_char]
+      )
+        ensure_utf8(io)
+
+        @csv = CSV.new(
+          io,
+          row_sep: row_sep,
+          col_sep: col_sep,
+          quote_char: quote_char
+        )
+
         @headers = detect_headers(@csv)
         @cols_count = @headers.size
       end
@@ -50,62 +61,48 @@ module Sheetah
       def each_row
         return to_enum(:each_row) unless block_given?
 
-        @csv.each.with_index(1) do |raw, row|
-          value = Array.new(@cols_count) do |col_idx|
-            col = Sheet.int2col(col_idx + 1)
+        handle_malformed_csv do
+          @csv.each.with_index(1) do |raw, row|
+            value = Array.new(@cols_count) do |col_idx|
+              col = Sheet.int2col(col_idx + 1)
 
-            Cell.new(row: row, col: col, value: raw[col_idx])
+              Cell.new(row: row, col: col, value: raw[col_idx])
+            end
+
+            yield Row.new(row: row, value: value)
           end
-
-          yield Row.new(row: row, value: value)
         end
 
         self
       end
 
       def close
-        @csv.close
-
-        nil
+        # Do nothing: this backend isn't responsible for opening the IO, and therefore it is not
+        # responsible for closing it either.
       end
 
       private
 
-      def setup_io(io, path, encoding)
-        if io.nil? && !path.nil?
-          setup_io_from_path(path, encoding)
-        elsif !io.nil? && path.nil?
-          setup_io_from_io(io, encoding)
-        else
-          raise ArgumentError, "Expected either IO or path"
-        end
+      def ensure_utf8(io)
+        target = Encoding::UTF_8
+
+        internal = io.internal_encoding
+        return if internal == target
+
+        external = io.external_encoding
+        return if external == target && internal.nil?
+
+        raise InvalidEncodingError
       end
 
-      def setup_io_from_io(io, encoding)
-        io.set_encoding(encoding, Encoding::UTF_8) if encoding
-        io
-      end
-
-      def setup_io_from_path(path, encoding)
-        opts = { mode: "r" }
-
-        if encoding
-          opts[:external_encoding] = encoding
-          opts[:internal_encoding] = Encoding::UTF_8
-        end
-
-        File.new(path, **opts)
+      def handle_malformed_csv
+        yield
+      rescue CSV::MalformedCSVError
+        raise InvalidCSVError
       end
 
       def detect_headers(csv)
-        headers =
-          begin
-            csv.shift
-          rescue CSV::MalformedCSVError
-            raise EncodingError
-          end
-
-        headers || []
+        handle_malformed_csv { csv.shift } || []
       end
     end
   end

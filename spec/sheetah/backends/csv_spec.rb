@@ -4,7 +4,6 @@ require "sheetah/backends/csv"
 require "support/shared/sheet_factories"
 require "csv"
 require "stringio"
-require "tempfile"
 
 RSpec.describe Sheetah::Backends::Csv do
   include_context "sheet_factories"
@@ -22,23 +21,21 @@ RSpec.describe Sheetah::Backends::Csv do
   end
 
   let(:sheet) do
-    described_class.new(io: raw_sheet)
+    described_class.new(raw_sheet)
   end
 
   def stub_sheet(table)
-    return if table.nil?
-
     csv = CSV.generate do |csv_io|
       table.each do |row|
         csv_io << row
       end
     end
 
-    StringIO.new(csv, "r")
+    StringIO.new(csv, "r:UTF-8")
   end
 
   def new_sheet(...)
-    described_class.new(io: stub_sheet(...))
+    described_class.new(stub_sheet(...))
   end
 
   describe "#initialize" do
@@ -59,72 +56,59 @@ RSpec.describe Sheetah::Backends::Csv do
       ]
     end
 
-    context "when no io nor path is given" do
-      it "fails" do
-        expect do
-          described_class.new
-        end.to raise_error(described_class::ArgumentError)
+    let(:sheet) { described_class.new(io) }
+    let(:sheet_headers) { sheet.each_header.map(&:value) }
+
+    context "when the IO is opened with a correct UTF-8 external encoding" do
+      let(:io) do
+        File.new(utf8_path, external_encoding: Encoding::UTF_8)
+      end
+
+      it "does not fail" do
+        expect { sheet }.not_to raise_error
+      end
+
+      it "produces UTF-8 strings" do
+        expect(sheet_headers).to eq(headers)
       end
     end
 
-    context "when both an io and a path are given" do
+    context "when the IO is opened with an incorrect external encoding" do
+      let(:io) do
+        File.new(latin9_path, external_encoding: Encoding::UTF_8)
+      end
+
       it "fails" do
-        expect do
-          described_class.new(io: double, path: double)
-        end.to raise_error(described_class::ArgumentError)
+        expect { sheet }.to raise_error(described_class::InvalidCSVError)
       end
     end
 
-    context "when only an io is given" do
-      let(:io) { File.new(io_path) }
-
-      context "when the default encoding is valid" do
-        alias_method :io_path, :utf8_path
-
-        it "can read CSV data" do
-          sheet = described_class.new(io: io)
-          expect(sheet.each_header.map(&:value)).to eq(headers)
+    context "when the IO is opened with a correct, non-UTF-8 external encoding" do
+      context "when UTF-8 is not set as the internal encoding" do
+        let(:io) do
+          File.new(latin9_path, external_encoding: Encoding::ISO_8859_15)
         end
-      end
-
-      context "when the default encoding is invalid" do
-        alias_method :io_path, :latin9_path
 
         it "fails" do
-          expect do
-            described_class.new(io: io)
-          end.to raise_error(described_class::EncodingError)
-        end
-
-        it "can read CSV data once given a valid encoding" do
-          sheet = described_class.new(io: io, encoding: Encoding::ISO_8859_15)
-          expect(sheet.each_header.map(&:value)).to eq(headers)
-        end
-      end
-    end
-
-    context "when only a path is given" do
-      context "when the default encoding is valid" do
-        alias_method :path, :utf8_path
-
-        it "can read CSV data" do
-          sheet = described_class.new(path: path)
-          expect(sheet.each_header.map(&:value)).to eq(headers)
+          expect { sheet }.to raise_error(described_class::InvalidEncodingError)
         end
       end
 
-      context "when the default encoding is invalid" do
-        alias_method :path, :latin9_path
-
-        it "fails" do
-          expect do
-            described_class.new(path: path)
-          end.to raise_error(described_class::EncodingError)
+      context "when UTF-8 is set as the internal encoding" do
+        let(:io) do
+          File.new(
+            latin9_path,
+            external_encoding: Encoding::ISO_8859_15,
+            internal_encoding: Encoding::UTF_8
+          )
         end
 
-        it "can read CSV data once given a valid encoding" do
-          sheet = described_class.new(path: path, encoding: Encoding::ISO_8859_15)
-          expect(sheet.each_header.map(&:value)).to eq(headers)
+        it "does not fail" do
+          expect { sheet }.not_to raise_error
+        end
+
+        it "produces UTF-8 strings" do
+          expect(sheet_headers).to eq(headers)
         end
       end
     end
@@ -196,8 +180,8 @@ RSpec.describe Sheetah::Backends::Csv do
       expect(sheet.close).to be_nil
     end
 
-    it "closes the underlying sheet" do
-      expect { sheet.close }.to change(raw_sheet, :closed?).from(false).to(true)
+    it "doesn't close the underlying sheet" do
+      expect { sheet.close }.not_to change(raw_sheet, :closed?).from(false)
     end
   end
 
@@ -209,12 +193,6 @@ RSpec.describe Sheetah::Backends::Csv do
 
       it "doesn't enumerate any row" do
         expect { |b| sheet.each_row(&b) }.not_to yield_control
-      end
-    end
-
-    context "when the input table is nil" do
-      it "raises an error" do
-        expect { new_sheet(nil) }.to raise_error(Sheetah::Sheet::Error)
       end
     end
 
@@ -232,8 +210,10 @@ RSpec.describe Sheetah::Backends::Csv do
   end
 
   describe "CSV options" do
-    it "requires a specific col_sep and quote_char" do
-      expect(CSV).to receive(:new).with(raw_sheet, col_sep: ",", quote_char: '"').and_call_original
+    it "requires a specific col_sep and quote_char, and an automatic row_sep" do
+      expect(CSV).to receive(:new)
+        .with(raw_sheet, row_sep: :auto, col_sep: ",", quote_char: '"')
+        .and_call_original
 
       sheet
     end
