@@ -6,25 +6,11 @@
 require "roo"
 
 require_relative "../sheet"
-require_relative "../backends"
 
 module Sheetah
   module Backends
     class Xlsx
       include Sheet
-
-      def self.register(registry = Backends.registry)
-        registry.set(self) do |args, opts|
-          next false unless args.empty?
-
-          case opts
-          in { path: /\.xlsx$/i, **nil }
-            true
-          else
-            false
-          end
-        end
-      end
 
       def initialize(path:)
         raise Error if path.nil?

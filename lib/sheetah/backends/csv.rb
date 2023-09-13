@@ -3,7 +3,6 @@
 require "csv"
 
 require_relative "../sheet"
-require_relative "../backends"
 
 module Sheetah
   module Backends
@@ -27,23 +26,6 @@ module Sheetah
       }.freeze
 
       private_constant :CSV_OPTS
-
-      def self.register(registry = Backends.registry)
-        registry.set(self) do |args, opts|
-          next false unless args.empty?
-
-          case opts
-          in { io: _, **nil } | \
-             { io: _, encoding: String | Encoding, **nil } | \
-             { path: /\.csv$/i, **nil } | \
-             { path: /\.csv$/i, encoding: String | Encoding, **nil }
-          then
-            true
-          else
-            false
-          end
-        end
-      end
 
       def initialize(io: nil, path: nil, encoding: nil)
         io = setup_io(io, path, encoding)
