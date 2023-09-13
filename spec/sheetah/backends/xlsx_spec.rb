@@ -11,7 +11,7 @@ RSpec.describe Sheetah::Backends::Xlsx do
   end
 
   def new_sheet(path)
-    described_class.new(path: path && fixture_path(path))
+    described_class.new(path && fixture_path(path))
   end
 
   describe "#each_header" do

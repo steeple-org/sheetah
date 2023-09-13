@@ -12,7 +12,7 @@ module Sheetah
     class Xlsx
       include Sheet
 
-      def initialize(path:)
+      def initialize(path)
         raise Error if path.nil?
 
         @roo = Roo::Excelx.new(path)
