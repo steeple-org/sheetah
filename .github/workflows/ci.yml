@@ -34,11 +34,30 @@ jobs:
       - name: Run specs
         run: bundle exec rspec
 
+  yard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ruby
+          bundler-cache: true
+      - name: Generate Ruby API documentation
+        run : bundle exec yard doc
+      - name: Generate Ruby API documentation artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: docs-ruby
+          path: docs/ruby
+
   pages:
     if: github.ref_name == 'ci-with-pages'
     needs:
       - rubocop
       - rspec
+      - yard
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -48,8 +67,11 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Prepage Pages
-        run: mkdir docs
+      - name: Fetch Ruby API documentation artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: docs-ruby
+          path: docs/ruby
       - name: Setup Pages
         uses: actions/configure-pages@v3
       - name: Upload Pages
