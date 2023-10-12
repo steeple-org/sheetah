@@ -65,7 +65,7 @@ jobs:
           path: docs/ruby
 
   pages:
-    if: github.ref_name == 'ci-with-pages'
+    if: github.ref_name == 'master'
     needs:
       - rubocop
       - rspec
