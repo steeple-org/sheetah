@@ -9,9 +9,6 @@ module Sheetah
     class Csv
       include Sheet
 
-      class InvalidEncodingError < Error
-      end
-
       class InvalidCSVError < Error
       end
 
@@ -33,8 +30,6 @@ module Sheetah
         col_sep: self.class.defaults[:col_sep],
         quote_char: self.class.defaults[:quote_char]
       )
-        ensure_utf8(io)
-
         @csv = CSV.new(
           io,
           row_sep: row_sep,
@@ -82,18 +77,6 @@ module Sheetah
       end
 
       private
-
-      def ensure_utf8(io)
-        target = Encoding::UTF_8
-
-        internal = io.internal_encoding
-        return if internal == target
-
-        external = io.external_encoding
-        return if external == target && internal.nil?
-
-        raise InvalidEncodingError
-      end
 
       def handle_malformed_csv
         yield

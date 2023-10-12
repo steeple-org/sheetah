@@ -59,17 +59,13 @@ RSpec.describe Sheetah::Backends::Csv do
     let(:sheet) { described_class.new(io) }
     let(:sheet_headers) { sheet.each_header.map(&:value) }
 
-    context "when the IO is opened with a correct UTF-8 external encoding" do
+    context "when the IO is opened with a correct external encoding" do
       let(:io) do
-        File.new(utf8_path, external_encoding: Encoding::UTF_8)
+        File.new(latin9_path, external_encoding: Encoding::ISO_8859_15)
       end
 
       it "does not fail" do
         expect { sheet }.not_to raise_error
-      end
-
-      it "produces UTF-8 strings" do
-        expect(sheet_headers).to eq(headers)
       end
     end
 
@@ -83,33 +79,19 @@ RSpec.describe Sheetah::Backends::Csv do
       end
     end
 
-    context "when the IO is opened with a correct, non-UTF-8 external encoding" do
-      context "when UTF-8 is not set as the internal encoding" do
-        let(:io) do
-          File.new(latin9_path, external_encoding: Encoding::ISO_8859_15)
-        end
-
-        it "fails" do
-          expect { sheet }.to raise_error(described_class::InvalidEncodingError)
-        end
+    context "when the IO is setup with different encodings" do
+      let(:io) do
+        File.new(
+          utf8_path,
+          external_encoding: Encoding::UTF_8,
+          internal_encoding: Encoding::ISO_8859_15
+        )
       end
 
-      context "when UTF-8 is set as the internal encoding" do
-        let(:io) do
-          File.new(
-            latin9_path,
-            external_encoding: Encoding::ISO_8859_15,
-            internal_encoding: Encoding::UTF_8
-          )
-        end
+      it "does not interfere" do
+        latin9_headers = headers.map { |str| str.encode(Encoding::ISO_8859_15) }
 
-        it "does not fail" do
-          expect { sheet }.not_to raise_error
-        end
-
-        it "produces UTF-8 strings" do
-          expect(sheet_headers).to eq(headers)
-        end
+        expect(sheet_headers).to eq(latin9_headers)
       end
     end
   end
