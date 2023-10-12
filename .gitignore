@@ -5,8 +5,8 @@
 spec/examples.txt
 
 # SimpleCov artifacts
-/coverage
+/docs/coverage
 
 # YARD artifacts
 /.yardoc
-/doc
+/docs/ruby
