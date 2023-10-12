@@ -11,27 +11,7 @@ RSpec.describe Sheetah::Backends::Xlsx do
   end
 
   def new_sheet(path)
-    described_class.new(path: path && fixture_path(path))
-  end
-
-  describe "::register" do
-    let(:registry) { Sheetah::BackendsRegistry.new }
-
-    before do
-      described_class.register(registry)
-    end
-
-    it "matches a XLSX path" do
-      expect(registry.get(path: "foo.xlsx")).to eq(described_class)
-    end
-
-    it "doesn't match any other path" do
-      expect(registry.get(path: "foo.xls")).to be_nil
-    end
-
-    it "doesn't match extra args" do
-      expect(registry.get(2, path: "foo.xlsx")).to be_nil
-    end
+    described_class.new(path && fixture_path(path))
   end
 
   describe "#each_header" do
