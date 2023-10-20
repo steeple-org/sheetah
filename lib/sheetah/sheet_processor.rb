@@ -52,7 +52,7 @@ module Sheetah
 
     def handle_result(result, messenger)
       result.or do |failure|
-        messenger.error(failure.msg_code) if failure.respond_to?(:msg_code)
+        messenger.error(failure.to_message) if failure.respond_to?(:to_message)
       end
 
       SheetProcessorResult.new(result: result.discard, messages: messenger.messages)

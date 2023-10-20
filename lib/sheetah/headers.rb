@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 
 require "set"
+require_relative "messaging/messages/invalid_header"
+require_relative "messaging/messages/duplicated_header"
+require_relative "messaging/messages/missing_column"
 
 module Sheetah
   class Headers
@@ -51,7 +54,9 @@ module Sheetah
         @failure = true
 
         missing_columns.each do |column|
-          @messenger.error("missing_column", column.header)
+          @messenger.error(
+            Messaging::Messages::MissingColumn.new(code_data: column.header)
+          )
         end
       end
 
@@ -69,7 +74,9 @@ module Sheetah
 
       unless @specification.ignore_unspecified_columns?
         @failure = true
-        @messenger.error("invalid_header", header.value)
+        @messenger.error(
+          Messaging::Messages::InvalidHeader.new(code_data: header.value)
+        )
       end
 
       false
@@ -79,7 +86,9 @@ module Sheetah
       return true if @columns.add?(column)
 
       @failure = true
-      @messenger.error("duplicated_header", header.value)
+      @messenger.error(
+        Messaging::Messages::DuplicatedHeader.new(code_data: header.value)
+      )
 
       false
     end

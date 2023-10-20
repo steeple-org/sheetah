@@ -31,7 +31,9 @@ RSpec.describe Sheetah::Types::Scalars::ScalarCast do
         it "halts with a failure and an appropriate error code" do
           expect do
             cast.call(nil, messenger)
-          end.to throw_symbol(:failure, "must_exist")
+          end.to throw_symbol(
+            :failure, Sheetah::Messaging::Messages::MustExist.new
+          )
         end
       end
     end
@@ -54,7 +56,8 @@ RSpec.describe Sheetah::Types::Scalars::ScalarCast do
             value = cast.call(string_with_garbage, messenger)
 
             expect(value).to eq(string_without_garbage)
-            expect(messenger).to have_received(:warn).with("cleaned_string")
+            expect(messenger).to have_received(:warn)
+              .with(Sheetah::Messaging::Messages::CleanedString.new)
           end
         end
 

@@ -41,7 +41,9 @@ RSpec.describe Sheetah::Types::Composites::Array do
         let(:value_is_array) { false }
 
         it "is a failure" do
-          expect { cast.call(value, messenger) }.to throw_symbol(:failure, "must_be_array")
+          expect do
+            cast.call(value, messenger)
+          end.to throw_symbol(:failure, Sheetah::Messaging::Messages::MustBeArray.new)
         end
       end
     end

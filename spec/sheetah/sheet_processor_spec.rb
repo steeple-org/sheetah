@@ -97,15 +97,12 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
   end
 
   context "when there is a sheet error" do
-    let(:error_class) do
-      klass = Class.new(Sheetah::Sheet::Error)
-      stub_const("Foo::Bar::BazError", klass)
-      klass.msg_code!
-      klass
+    let(:error) do
+      instance_double(Sheetah::Sheet::Error, to_message: message)
     end
 
-    let(:error) do
-      error_class.exception
+    let(:message) do
+      Sheetah::Messaging::Message.new(code: double, code_data: double)
     end
 
     before do
@@ -118,8 +115,8 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
           result: Failure(),
           messages: [
             Sheetah::Messaging::Message.new(
-              code: "foo.bar.baz_error",
-              code_data: nil,
+              code: message.code,
+              code_data: message.code_data,
               scope: "SHEET",
               scope_data: nil,
               severity: "ERROR"

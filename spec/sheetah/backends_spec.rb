@@ -37,7 +37,7 @@ RSpec.describe Sheetah::Backends do
 
       result = described_class.open(foo, bar: bar)
       expect(result).to be_failure
-      expect(result.failure).to have_attributes(msg_code: "no_applicable_backend")
+      expect(result.failure).to eq(Sheetah::Messaging::Messages::NoApplicableBackend.new)
     end
   end
 end

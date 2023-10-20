@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative "../../messaging/messages/must_be_boolsy"
 require_relative "../cast"
 
 module Sheetah
@@ -17,14 +18,15 @@ module Sheetah
           @falsy  = falsy
         end
 
-        def call(value, messenger)
+        def call(value, _messenger)
           if @truthy.include?(value)
             true
           elsif @falsy.include?(value)
             false
           else
-            messenger.error("must_be_boolsy", value: value.inspect)
-            throw :failure
+            throw :failure, Messaging::Messages::MustBeBoolsy.new(
+              code_data: { value: value.inspect }
+            )
           end
         end
       end

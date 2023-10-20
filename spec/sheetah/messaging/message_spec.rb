@@ -65,6 +65,22 @@ RSpec.describe Sheetah::Messaging::Message do
     expect(message).not_to eq(other_message)
   end
 
+  describe "#to_h" do
+    it "returns the attributes as a hash" do
+      attrs = {
+        code: double,
+        code_data: double,
+        scope: double,
+        scope_data: double,
+        severity: double,
+      }
+
+      message = described_class.new(**attrs)
+
+      expect(message.to_h).to eq(attrs)
+    end
+  end
+
   describe "#to_s" do
     let(:code)       { "foo_is_bar" }
     let(:code_data)  { nil }
@@ -121,6 +137,149 @@ RSpec.describe Sheetah::Messaging::Message do
 
       it "can be reduced to a string" do
         expect(message.to_s).to eq("[SHEET] ERROR: foo_is_bar {:foo=>\"bar\"}")
+      end
+    end
+  end
+
+  describe "validations" do
+    it "is valid by default" do
+      msg = described_class.new(code: double, validatable: true)
+
+      expect(msg.validate).to be_nil
+    end
+
+    context "when customized" do
+      let(:msg_class) do
+        Class.new(described_class) do
+          def self.code
+            "foobar"
+          end
+
+          validate_with do
+            row
+
+            def validate_code_data(message)
+              message.code_data.is_a?(Hash)
+            end
+          end
+        end
+      end
+
+      let(:msg) do
+        msg_class.new(
+          code: "foobar",
+          code_data: {},
+          scope: "ROW",
+          scope_data: { row: 42 },
+          validatable: true
+        )
+      end
+
+      it "may be valid" do
+        expect(msg.validate).to be_nil
+      end
+
+      it "validates the code" do
+        msg.code = "qoifo"
+
+        expect { msg.validate }.to raise_error(
+          Sheetah::Messaging::MessageValidations::InvalidMessage,
+          /^code /
+        )
+      end
+
+      it "validates the code data" do
+        msg.code_data = nil
+
+        expect { msg.validate }.to raise_error(
+          Sheetah::Messaging::MessageValidations::InvalidMessage,
+          /^code_data /
+        )
+      end
+
+      it "validates the scope" do
+        msg.scope = "SHEET"
+
+        expect { msg.validate }.to raise_error(
+          Sheetah::Messaging::MessageValidations::InvalidMessage,
+          /^scope /
+        )
+      end
+
+      it "validates the scope_data" do
+        msg.scope_data = nil
+
+        expect { msg.validate }.to raise_error(
+          Sheetah::Messaging::MessageValidations::InvalidMessage,
+          /^scope_data /
+        )
+      end
+
+      it "validates multiple attributes at once" do
+        msg.code_data = nil
+        msg.scope_data = nil
+
+        expect { msg.validate }.to raise_error(
+          Sheetah::Messaging::MessageValidations::InvalidMessage,
+          /^code_data, scope_data /
+        )
+      end
+
+      it "may ignore validations" do
+        msg = msg_class.new(validatable: false)
+
+        expect(msg.validate).to be_nil
+      end
+
+      describe "inheritance" do
+        let(:msg1_class) do
+          Class.new(msg_class) do
+            def self.code
+              "barbaz"
+            end
+          end
+        end
+
+        let(:msg1) do
+          msg1_class.new(
+            code: "barbaz",
+            code_data: {},
+            scope: "ROW",
+            scope_data: { row: 42 },
+            validatable: true
+          )
+        end
+
+        it "may rely on a parent validator" do
+          expect(msg1.validate).to be_nil
+
+          msg1.scope = "SHEET"
+
+          expect { msg1.validate }.to raise_error(
+            Sheetah::Messaging::MessageValidations::InvalidMessage,
+            /^scope /
+          )
+        end
+      end
+    end
+  end
+
+  describe "initializations" do
+    before do
+      allow(described_class).to receive(:validate)
+    end
+
+    describe "::new" do
+      it "will not validate after initialization" do
+        described_class.new(code: double, validatable: true)
+        expect(described_class).not_to have_received(:validate)
+      end
+    end
+
+    describe "::new!" do
+      it "will validate after initialization" do
+        message = described_class.new!(code: double, validatable: true)
+        expect(described_class).to have_received(:validate).with(message)
       end
     end
   end

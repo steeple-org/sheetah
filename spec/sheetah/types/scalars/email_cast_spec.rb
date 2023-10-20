@@ -41,8 +41,12 @@ RSpec.describe Sheetah::Types::Scalars::EmailCast do
       let(:value_is_email) { false }
 
       it "adds an error message and throws :failure" do
-        expect(messenger).to receive(:error).with("must_be_email", value: value.inspect)
-        expect { cast.call(value, messenger) }.to throw_symbol(:failure, nil)
+        expect do
+          cast.call(value, messenger)
+        end.to throw_symbol(
+          :failure,
+          Sheetah::Messaging::Messages::MustBeEmail.new(code_data: { value: value.inspect })
+        )
       end
     end
   end

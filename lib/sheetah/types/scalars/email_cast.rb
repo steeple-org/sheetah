@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "uri"
+require_relative "../../messaging/messages/must_be_email"
 require_relative "../cast"
 
 module Sheetah
@@ -16,12 +17,10 @@ module Sheetah
           @email_matcher = email_matcher
         end
 
-        def call(value, messenger)
+        def call(value, _messenger)
           return value if @email_matcher.match?(value)
 
-          messenger.error("must_be_email", value: value.inspect)
-
-          throw :failure
+          throw :failure, Messaging::Messages::MustBeEmail.new(code_data: { value: value.inspect })
         end
       end
     end
