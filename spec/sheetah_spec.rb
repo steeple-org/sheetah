@@ -137,6 +137,32 @@ RSpec.describe Sheetah, monadic_result: true do
           Success(foo: "dlrow", bar: [nil, nil, "foo@bar.baz", nil, Float])
         )
       end
+
+      context "when the reporting is enabled" do
+        before { template_opts[:report_ignored_columns] = true }
+
+        it "messages the ignored columns" do # rubocop:disable RSpec/ExampleLength
+          expect(process(input) {}).to have_attributes(
+            result: Success(),
+            messages: contain_exactly(
+              have_attributes(
+                code: "ignored_column",
+                code_data: "oof",
+                scope: Sheetah::Messaging::SCOPES::COL,
+                scope_data: { col: "C" },
+                severity: Sheetah::Messaging::SEVERITIES::WARN
+              ),
+              have_attributes(
+                code: "ignored_column",
+                code_data: "rab",
+                scope: Sheetah::Messaging::SCOPES::COL,
+                scope_data: { col: "F" },
+                severity: Sheetah::Messaging::SEVERITIES::WARN
+              )
+            )
+          )
+        end
+      end
     end
 
     context "when the template doesn't allow it" do

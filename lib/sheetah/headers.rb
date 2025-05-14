@@ -72,6 +72,8 @@ module Sheetah
         @messenger.error("invalid_header", header.value)
       end
 
+      @messenger.warn("ignored_column", header.value) if @specification.report_ignored_columns?
+
       false
     end
 
