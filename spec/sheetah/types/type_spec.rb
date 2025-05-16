@@ -188,7 +188,7 @@ RSpec.describe Sheetah::Types::Type do
 
         expect(type.cast_chain).to(
           be_a(Sheetah::Types::CastChain) &
-          have_attributes(casts: casts)
+          have_attributes(casts:)
         )
       end
     end

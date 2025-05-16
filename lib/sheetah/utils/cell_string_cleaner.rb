@@ -4,8 +4,8 @@ module Sheetah
   module Utils
     class CellStringCleaner
       garbage = "(?:[^[:print:]]|[[:space:]])+"
-      GARBAGE_PREFIX = /\A#{garbage}/.freeze
-      GARBAGE_SUFFIX = /#{garbage}\Z/.freeze
+      GARBAGE_PREFIX = /\A#{garbage}/
+      GARBAGE_SUFFIX = /#{garbage}\Z/
       private_constant :GARBAGE_PREFIX, :GARBAGE_SUFFIX
 
       def self.call(...)

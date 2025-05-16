@@ -31,12 +31,12 @@ module Sheetah
         header, header_pattern = config.header(key, index)
 
         yield Column.new(
-          key: key,
+          key:,
           type: compiled_type,
-          index: index,
-          header: header,
-          header_pattern: header_pattern,
-          required: required
+          index:,
+          header:,
+          header_pattern:,
+          required:
         )
       end
     end

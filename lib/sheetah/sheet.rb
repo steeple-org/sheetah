@@ -19,9 +19,9 @@ module Sheetah
     end
 
     module ClassMethods
-      def open(*args, **opts)
+      def open(*, **)
         handle_sheet_error do
-          sheet = new(*args, **opts)
+          sheet = new(*, **)
           next sheet unless block_given?
 
           begin

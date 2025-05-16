@@ -42,7 +42,7 @@ RSpec.describe Sheetah, monadic_result: true do
   end
 
   let(:template_config) do
-    Sheetah::TemplateConfig.new(types: types)
+    Sheetah::TemplateConfig.new(types:)
   end
 
   let(:specification) do
@@ -62,13 +62,13 @@ RSpec.describe Sheetah, monadic_result: true do
     ]
   end
 
-  def process(*args, **opts, &block)
-    processor.call(*args, backend: Sheetah::Backends::Wrapper, **opts, &block)
+  def process(*, **, &)
+    processor.call(*, backend: Sheetah::Backends::Wrapper, **, &)
   end
 
-  def process_to_a(*args, **opts)
+  def process_to_a(*, **)
     a = []
-    processor.call(*args, backend: Sheetah::Backends::Wrapper, **opts) { |result| a << result }
+    processor.call(*, backend: Sheetah::Backends::Wrapper, **) { |result| a << result }
     a
   end
 

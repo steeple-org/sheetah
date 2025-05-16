@@ -11,11 +11,11 @@ RSpec.describe Sheetah::Column do
 
   let(:col) do
     described_class.new(
-      key: key,
-      type: type,
-      index: index,
-      header: header,
-      header_pattern: header_pattern
+      key:,
+      type:,
+      index:,
+      header:,
+      header_pattern:
     )
   end
 
@@ -58,10 +58,10 @@ RSpec.describe Sheetah::Column do
 
       let(:col) do
         described_class.new(
-          key: key,
-          type: type,
-          index: index,
-          header: header
+          key:,
+          type:,
+          index:,
+          header:
         )
       end
 

@@ -169,7 +169,7 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
     def stub_headers
       allow(Sheetah::Headers).to(
         receive(:new)
-        .with(specification: specification, messenger: messenger)
+        .with(specification:, messenger:)
         .and_return(headers)
       )
     end
@@ -226,7 +226,7 @@ RSpec.describe Sheetah::SheetProcessor, monadic_result: true do
     def stub_row_processing
       allow(Sheetah::RowProcessor).to(
         receive(:new)
-        .with(headers: headers_spec, messenger: messenger)
+        .with(headers: headers_spec, messenger:)
         .and_return(row_processor = instance_double(Sheetah::RowProcessor))
       )
 

@@ -9,7 +9,7 @@ Gem::Specification.new do |spec|
   spec.homepage = "https://steeple.com"
   spec.summary  = "Process tabular data from different sources with a rich, unified API"
 
-  spec.required_ruby_version = ">= 2.7.0"
+  spec.required_ruby_version = ">= 3.2"
 
   spec.metadata["homepage_uri"]      = "https://github.com/steeple-org/sheetah"
   spec.metadata["source_code_uri"]   = "https://github.com/steeple-org/sheetah"

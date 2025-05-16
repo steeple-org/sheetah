@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-require "set"
 require_relative "attribute"
 require_relative "specification"
 require_relative "errors/spec_error"

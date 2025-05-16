@@ -59,7 +59,7 @@ module Sheetah
         @headers.each_with_index do |header, col_idx|
           col = Sheet.int2col(col_idx + 1)
 
-          yield Header.new(col: col, value: header)
+          yield Header.new(col:, value: header)
         end
 
         self
@@ -72,10 +72,10 @@ module Sheetah
           value = Array.new(@cols_count) do |col_idx|
             col = Sheet.int2col(col_idx + 1)
 
-            Cell.new(row: row, col: col, value: raw[col_idx])
+            Cell.new(row:, col:, value: raw[col_idx])
           end
 
-          yield Row.new(row: row, value: value)
+          yield Row.new(row:, value:)
         end
 
         self

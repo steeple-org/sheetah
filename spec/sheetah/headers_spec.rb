@@ -33,7 +33,7 @@ RSpec.describe Sheetah::Headers, monadic_result: true do
   end
 
   let(:headers) do
-    described_class.new(specification: specification, messenger: messenger)
+    described_class.new(specification:, messenger:)
   end
 
   def stub_specification(column_by_header)

@@ -25,7 +25,7 @@ RSpec.describe Sheetah::Types::Scalars::DateStringCast do
 
     context "when value is a Date" do
       subject(:cast) do
-        described_class.new(accept_date: accept_date)
+        described_class.new(accept_date:)
       end
 
       before do
@@ -52,7 +52,7 @@ RSpec.describe Sheetah::Types::Scalars::DateStringCast do
 
     context "when value is a string" do
       subject(:cast) do
-        described_class.new(date_fmt: date_fmt)
+        described_class.new(date_fmt:)
       end
 
       let(:date_fmt) { "%d/%m/%Y" }

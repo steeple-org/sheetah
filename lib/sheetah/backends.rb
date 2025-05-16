@@ -13,14 +13,14 @@ module Sheetah
     class << self
       attr_reader :registry
 
-      def open(*args, **opts, &block)
-        backend = opts.delete(:backend) || registry.get(*args, **opts)
+      def open(*, **opts, &)
+        backend = opts.delete(:backend) || registry.get(*, **opts)
 
         if backend.nil?
           return Utils::MonadicResult::Failure.new(SimpleError.new("no_applicable_backend"))
         end
 
-        backend.open(*args, **opts, &block)
+        backend.open(*, **opts, &)
       end
     end
   end

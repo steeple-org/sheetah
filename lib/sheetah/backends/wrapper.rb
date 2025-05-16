@@ -40,10 +40,10 @@ module Sheetah
           raw = @table[row]
 
           value = Array.new(@cols_count) do |col_idx|
-            Cell.new(row: row, col: Sheet.int2col(col_idx + 1), value: raw[col_idx])
+            Cell.new(row:, col: Sheet.int2col(col_idx + 1), value: raw[col_idx])
           end
 
-          yield Row.new(row: row, value: value)
+          yield Row.new(row:, value:)
         end
 
         self

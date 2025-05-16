@@ -11,11 +11,11 @@ RSpec.describe Sheetah::Messaging::Message do
 
   let(:message) do
     described_class.new(
-      code: code,
-      code_data: code_data,
-      scope: scope,
-      scope_data: scope_data,
-      severity: severity
+      code:,
+      code_data:,
+      scope:,
+      scope_data:,
+      severity:
     )
   end
 
@@ -24,8 +24,8 @@ RSpec.describe Sheetah::Messaging::Message do
   end
 
   it "may have only a custom code and some defaults attributes" do
-    expect(described_class.new(code: code)).to have_attributes(
-      code: code,
+    expect(described_class.new(code:)).to have_attributes(
+      code:,
       code_data: nil,
       scope: Sheetah::Messaging::SCOPES::SHEET,
       scope_data: nil,
@@ -35,32 +35,32 @@ RSpec.describe Sheetah::Messaging::Message do
 
   it "may have completely custom attributes" do
     expect(message).to have_attributes(
-      code: code,
-      code_data: code_data,
-      scope: scope,
-      scope_data: scope_data,
-      severity: severity
+      code:,
+      code_data:,
+      scope:,
+      scope_data:,
+      severity:
     )
   end
 
   it "is equivalent to a message having the same attributes" do
     other_message = described_class.new(
-      code: code,
-      code_data: code_data,
-      scope: scope,
-      scope_data: scope_data,
-      severity: severity
+      code:,
+      code_data:,
+      scope:,
+      scope_data:,
+      severity:
     )
     expect(message).to eq(other_message)
   end
 
   it "is not equivalent to a message having different attributes" do
     other_message = described_class.new(
-      code: code,
-      code_data: code_data,
-      scope: scope,
+      code:,
+      code_data:,
+      scope:,
       scope_data: double,
-      severity: severity
+      severity:
     )
     expect(message).not_to eq(other_message)
   end

@@ -19,23 +19,23 @@ RSpec.describe Sheetah::Backends do
     let(:res) { double }
 
     it "may open with an explicit backend" do
-      allow(backend).to receive(:open).with(foo, bar: bar).and_return(res)
+      allow(backend).to receive(:open).with(foo, bar:).and_return(res)
       expect(described_class.registry).not_to receive(:get)
 
-      expect(described_class.open(foo, backend: backend, bar: bar)).to be(res)
+      expect(described_class.open(foo, backend:, bar:)).to be(res)
     end
 
     it "may open with an implicit backend" do
-      allow(backend).to receive(:open).with(foo, bar: bar).and_return(res)
-      allow(described_class.registry).to receive(:get).with(foo, bar: bar).and_return(backend)
+      allow(backend).to receive(:open).with(foo, bar:).and_return(res)
+      allow(described_class.registry).to receive(:get).with(foo, bar:).and_return(backend)
 
-      expect(described_class.open(foo, bar: bar)).to be(res)
+      expect(described_class.open(foo, bar:)).to be(res)
     end
 
     it "may miss a backend to open" do
-      allow(described_class.registry).to receive(:get).with(foo, bar: bar).and_return(nil)
+      allow(described_class.registry).to receive(:get).with(foo, bar:).and_return(nil)
 
-      result = described_class.open(foo, bar: bar)
+      result = described_class.open(foo, bar:)
       expect(result).to be_failure
       expect(result.failure).to have_attributes(msg_code: "no_applicable_backend")
     end

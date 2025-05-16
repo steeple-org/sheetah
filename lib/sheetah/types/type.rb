@@ -44,11 +44,11 @@ module Sheetah
 
       self.cast_classes = []
 
-      def initialize(**opts)
+      def initialize(**)
         @cast_chain = CastChain.new
 
         self.class.cast_classes.each do |cast_class|
-          @cast_chain.append(cast_class.new(**opts))
+          @cast_chain.append(cast_class.new(**))
         end
       end
 

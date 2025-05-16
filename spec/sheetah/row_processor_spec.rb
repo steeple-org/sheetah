@@ -43,7 +43,7 @@ RSpec.describe Sheetah::RowProcessor, monadic_result: true do
   end
 
   let(:processor) do
-    described_class.new(headers: headers, messenger: messenger)
+    described_class.new(headers:, messenger:)
   end
 
   def expect_headers_add(header, cell)

@@ -69,7 +69,7 @@ RSpec.describe Sheetah::Specification do
 
   describe "#get" do
     let(:regexp_pattern) do
-      /foo\d{3}bar/i.freeze
+      /foo\d{3}bar/i
     end
 
     let(:string_pattern) do

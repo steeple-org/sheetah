@@ -107,7 +107,7 @@ module Sheetah
         dup.scoping!(...)
       end
 
-      def scope_row!(row, &block)
+      def scope_row!(row, &)
         scope = case @scope
                 when SCOPES::COL, SCOPES::CELL
                   SCOPES::CELL
@@ -118,10 +118,10 @@ module Sheetah
         scope_data = @scope_data.dup || {}
         scope_data[:row] = row
 
-        scoping!(scope, scope_data, &block)
+        scoping!(scope, scope_data, &)
       end
 
-      def scope_col!(col, &block)
+      def scope_col!(col, &)
         scope = case @scope
                 when SCOPES::ROW, SCOPES::CELL
                   SCOPES::CELL
@@ -132,7 +132,7 @@ module Sheetah
         scope_data = @scope_data.dup || {}
         scope_data[:col] = col
 
-        scoping!(scope, scope_data, &block)
+        scoping!(scope, scope_data, &)
       end
 
       def scope_row(...)
@@ -159,11 +159,11 @@ module Sheetah
 
       def add(severity, code, data)
         messages << Message.new(
-          code: code,
+          code:,
           code_data: data,
           scope: @scope,
           scope_data: @scope_data,
-          severity: severity
+          severity:
         )
 
         self
