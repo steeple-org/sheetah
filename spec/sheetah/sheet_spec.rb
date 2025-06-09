@@ -19,7 +19,7 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
   end
 
   let(:sheet) do
-    sheet_class.new(foo, bar: bar)
+    sheet_class.new(foo, bar:)
   end
 
   let(:foo) { double }
@@ -37,14 +37,14 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
     let(:col) { double }
     let(:val) { double }
 
-    let(:wrapper) { sheet_class::Header.new(col: col, value: val) }
+    let(:wrapper) { sheet_class::Header.new(col:, value: val) }
 
     it "exposes a header wrapper" do
-      expect(wrapper).to have_attributes(col: col, value: val)
+      expect(wrapper).to have_attributes(col:, value: val)
     end
 
     it "is comparable" do
-      expect(wrapper).to eq(sheet_class::Header.new(col: col, value: val))
+      expect(wrapper).to eq(sheet_class::Header.new(col:, value: val))
       expect(wrapper).not_to eq(sheet_class::Header.new(col: double, value: val))
     end
   end
@@ -53,14 +53,14 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
     let(:row) { double }
     let(:val) { double }
 
-    let(:wrapper) { sheet_class::Row.new(row: row, value: val) }
+    let(:wrapper) { sheet_class::Row.new(row:, value: val) }
 
     it "exposes a row wrapper" do
-      expect(wrapper).to have_attributes(row: row, value: val)
+      expect(wrapper).to have_attributes(row:, value: val)
     end
 
     it "is comparable" do
-      expect(wrapper).to eq(sheet_class::Row.new(row: row, value: val))
+      expect(wrapper).to eq(sheet_class::Row.new(row:, value: val))
       expect(wrapper).not_to eq(sheet_class::Row.new(row: double, value: val))
     end
   end
@@ -70,15 +70,15 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
     let(:col) { double }
     let(:val) { double }
 
-    let(:wrapper) { sheet_class::Cell.new(row: row, col: col, value: val) }
+    let(:wrapper) { sheet_class::Cell.new(row:, col:, value: val) }
 
     it "exposes a row wrapper" do
-      expect(wrapper).to have_attributes(row: row, col: col, value: val)
+      expect(wrapper).to have_attributes(row:, col:, value: val)
     end
 
     it "is comparable" do
-      expect(wrapper).to eq(sheet_class::Cell.new(row: row, col: col, value: val))
-      expect(wrapper).not_to eq(sheet_class::Cell.new(row: double, col: col, value: val))
+      expect(wrapper).to eq(sheet_class::Cell.new(row:, col:, value: val))
+      expect(wrapper).not_to eq(sheet_class::Cell.new(row: double, col:, value: val))
     end
   end
 
@@ -139,12 +139,12 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
     end
 
     before do
-      allow(sheet_class).to receive(:new).with(foo, bar: bar).and_return(sheet)
+      allow(sheet_class).to receive(:new).with(foo, bar:).and_return(sheet)
     end
 
     context "without a block" do
       it "returns a new sheet wrapped as a Success" do
-        expect(sheet_class.open(foo, bar: bar)).to eq(Success(sheet))
+        expect(sheet_class.open(foo, bar:)).to eq(Success(sheet))
       end
     end
 
@@ -156,7 +156,7 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
       it "yields a new sheet" do
         yielded = false
 
-        sheet_class.open(foo, bar: bar) do |opened_sheet|
+        sheet_class.open(foo, bar:) do |opened_sheet|
           yielded = true
           expect(opened_sheet).to be(sheet)
         end
@@ -166,13 +166,13 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
 
       it "returns the value of the block, wrapped as a success" do
         block_result = double
-        actual_block_result = sheet_class.open(foo, bar: bar) { block_result }
+        actual_block_result = sheet_class.open(foo, bar:) { block_result }
 
         expect(actual_block_result).to eq(Success(block_result))
       end
 
       it "closes after yielding" do
-        sheet_class.open(foo, bar: bar) do
+        sheet_class.open(foo, bar:) do
           expect(sheet).not_to have_received(:close)
         end
 
@@ -189,7 +189,7 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
             allow(sheet_class).to receive(:new).and_raise(exception)
 
             expect do
-              sheet_class.open(foo, bar: bar)
+              sheet_class.open(foo, bar:)
             end.to raise_error(exception)
           end
 
@@ -197,14 +197,14 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
             allow(sheet_class).to receive(:new).and_raise(error)
 
             expect do
-              sheet_class.open(foo, bar: bar)
+              sheet_class.open(foo, bar:)
             end.to raise_error(error)
           end
 
           it "rescues and wraps a sheet error in a failure" do
             allow(sheet_class).to receive(:new).and_raise(e = sheet_error.exception)
 
-            result = sheet_class.open(foo, bar: bar)
+            result = sheet_class.open(foo, bar:)
 
             expect(result).to eq(Failure(e))
           end
@@ -213,7 +213,7 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
         context "while yielding control" do
           it "doesn't rescue but closes after an exception is raised" do
             expect do
-              sheet_class.open(foo, bar: bar) do
+              sheet_class.open(foo, bar:) do
                 expect(sheet).not_to have_received(:close)
                 raise exception
               end
@@ -224,7 +224,7 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
 
           it "doesn't rescue but closes after a standard error is raised" do
             expect do
-              sheet_class.open(foo, bar: bar) do
+              sheet_class.open(foo, bar:) do
                 expect(sheet).not_to have_received(:close)
                 raise error
               end
@@ -234,7 +234,7 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
           end
 
           it "rescues and closes after a sheet error is raised" do
-            sheet_class.open(foo, bar: bar) do
+            sheet_class.open(foo, bar:) do
               expect(sheet).not_to have_received(:close)
               raise sheet_error
             end
@@ -245,7 +245,7 @@ RSpec.describe Sheetah::Sheet, monadic_result: true do
           it "returns the exception, wrapped as a failure, after a sheet error is raised" do
             e = sheet_error.exception # raise the instance directly to simplify result matching
 
-            result = sheet_class.open(foo, bar: bar) do
+            result = sheet_class.open(foo, bar:) do
               raise e
             end
 

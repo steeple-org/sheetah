@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require "set"
-
 module Sheetah
   class Headers
     include Utils::MonadicResult
@@ -71,6 +69,8 @@ module Sheetah
         @failure = true
         @messenger.error("invalid_header", header.value)
       end
+
+      @messenger.warn("ignored_column", header.value) if @specification.report_ignored_columns?
 
       false
     end

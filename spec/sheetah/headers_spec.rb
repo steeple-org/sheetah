@@ -11,7 +11,8 @@ RSpec.describe Sheetah::Headers, monadic_result: true do
     instance_double(
       Sheetah::Specification,
       required_columns: [],
-      ignore_unspecified_columns?: false
+      ignore_unspecified_columns?: false,
+      report_ignored_columns?: false
     )
   end
 
@@ -32,7 +33,7 @@ RSpec.describe Sheetah::Headers, monadic_result: true do
   end
 
   let(:headers) do
-    described_class.new(specification: specification, messenger: messenger)
+    described_class.new(specification:, messenger:)
   end
 
   def stub_specification(column_by_header)
@@ -105,6 +106,31 @@ RSpec.describe Sheetah::Headers, monadic_result: true do
             ),
           ]
         )
+      end
+
+      context "when the ignored columns reporting is enabled" do
+        let(:specification) do
+          instance_double(
+            Sheetah::Specification,
+            required_columns: [],
+            ignore_unspecified_columns?: true,
+            report_ignored_columns?: true
+          )
+        end
+
+        it "messages a warning" do
+          expect(messenger.messages).to eq(
+            [
+              Sheetah::Messaging::Message.new(
+                severity: Sheetah::Messaging::SEVERITIES::WARN,
+                code: "ignored_column",
+                code_data: sheet_headers[4].value,
+                scope: Sheetah::Messaging::SCOPES::COL,
+                scope_data: { col: sheet_headers[4].col }
+              ),
+            ]
+          )
+        end
       end
     end
 

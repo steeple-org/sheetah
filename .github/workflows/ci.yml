@@ -21,10 +21,10 @@ jobs:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest]
-        ruby: ['2.7', '3.0', '3.1', '3.2']
+        ruby: ['3.2', '3.3']
         include:
           - os: ubuntu-latest
-            ruby: '3.2'
+            ruby: '3.3'
             coverage: true
     runs-on: ${{ matrix.os }}
     steps:
@@ -41,7 +41,7 @@ jobs:
           COVERAGE: ${{ matrix.coverage }}
       - name: Generate coverage artifact
         if: ${{ matrix.coverage }}
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: docs-coverage
           path: docs/coverage
@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Setup Ruby
         uses: ruby/setup-ruby@v1
         with:
@@ -59,7 +59,7 @@ jobs:
       - name: Generate Ruby API documentation
         run : bundle exec yard doc
       - name: Generate Ruby API documentation artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: docs-ruby
           path: docs/ruby
@@ -80,12 +80,12 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Fetch Ruby API documentation artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: docs-ruby
           path: docs/ruby
       - name: Fetch coverage artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: docs-coverage
           path: docs/coverage

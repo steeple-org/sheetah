@@ -16,7 +16,7 @@ RSpec.describe Sheetah::Types::Scalars::EmailCast do
   end
 
   describe "#call" do
-    subject(:cast) { described_class.new(email_matcher: email_matcher) }
+    subject(:cast) { described_class.new(email_matcher:) }
 
     let(:email_matcher) do
       instance_double(Regexp)

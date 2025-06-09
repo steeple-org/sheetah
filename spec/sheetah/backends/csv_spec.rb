@@ -51,9 +51,9 @@ RSpec.describe Sheetah::Backends::Csv do
     it "matches any so-called IO and an optional encoding" do
       io = double
 
-      expect(registry.get(io: io)).to eq(described_class)
-      expect(registry.get(io: io, encoding: "UTF-8")).to eq(described_class)
-      expect(registry.get(io: io, encoding: Encoding::UTF_8)).to eq(described_class)
+      expect(registry.get(io:)).to eq(described_class)
+      expect(registry.get(io:, encoding: "UTF-8")).to eq(described_class)
+      expect(registry.get(io:, encoding: Encoding::UTF_8)).to eq(described_class)
     end
 
     it "matches a CSV path and an optional encoding" do
@@ -112,7 +112,7 @@ RSpec.describe Sheetah::Backends::Csv do
         alias_method :io_path, :utf8_path
 
         it "can read CSV data" do
-          sheet = described_class.new(io: io)
+          sheet = described_class.new(io:)
           expect(sheet.each_header.map(&:value)).to eq(headers)
         end
       end
@@ -122,12 +122,12 @@ RSpec.describe Sheetah::Backends::Csv do
 
         it "fails" do
           expect do
-            described_class.new(io: io)
+            described_class.new(io:)
           end.to raise_error(described_class::EncodingError)
         end
 
         it "can read CSV data once given a valid encoding" do
-          sheet = described_class.new(io: io, encoding: Encoding::ISO_8859_15)
+          sheet = described_class.new(io:, encoding: Encoding::ISO_8859_15)
           expect(sheet.each_header.map(&:value)).to eq(headers)
         end
       end
@@ -138,7 +138,7 @@ RSpec.describe Sheetah::Backends::Csv do
         alias_method :path, :utf8_path
 
         it "can read CSV data" do
-          sheet = described_class.new(path: path)
+          sheet = described_class.new(path:)
           expect(sheet.each_header.map(&:value)).to eq(headers)
         end
       end
@@ -148,12 +148,12 @@ RSpec.describe Sheetah::Backends::Csv do
 
         it "fails" do
           expect do
-            described_class.new(path: path)
+            described_class.new(path:)
           end.to raise_error(described_class::EncodingError)
         end
 
         it "can read CSV data once given a valid encoding" do
-          sheet = described_class.new(path: path, encoding: Encoding::ISO_8859_15)
+          sheet = described_class.new(path:, encoding: Encoding::ISO_8859_15)
           expect(sheet.each_header.map(&:value)).to eq(headers)
         end
       end

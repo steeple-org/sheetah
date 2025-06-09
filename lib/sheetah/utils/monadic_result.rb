@@ -164,8 +164,8 @@ module Sheetah
         Failure.new(...)
       end
 
-      def Do(&block)
-        catch(DO_TOKEN, &block)
+      def Do(&)
+        catch(DO_TOKEN, &)
       end
 
       # rubocop:enable Naming/MethodName

@@ -19,7 +19,7 @@ RSpec.shared_context "sheet_factories" do
     int = Sheetah::Sheet.col2int(col)
 
     values.map.with_index(int) do |value, index|
-      cell(row: row, col: Sheetah::Sheet.int2col(index), value: value)
+      cell(row:, col: Sheetah::Sheet.int2col(index), value:)
     end
   end
 end

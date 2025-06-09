@@ -16,7 +16,7 @@ RSpec.describe Sheetah::Types::Scalars::BoolsyCast do
   end
 
   describe "#call" do
-    subject(:cast) { described_class.new(truthy: truthy, falsy: falsy) }
+    subject(:cast) { described_class.new(truthy:, falsy:) }
 
     let(:value) { instance_double(Object, inspect: double) }
     let(:messenger) { instance_double(Sheetah::Messaging::Messenger) }

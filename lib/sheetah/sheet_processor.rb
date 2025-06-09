@@ -16,11 +16,11 @@ module Sheetah
       @specification = specification
     end
 
-    def call(*args, **opts)
+    def call(*, **)
       messenger = Messaging::Messenger.new
 
       result = Do() do
-        Backends.open(*args, **opts) do |sheet|
+        Backends.open(*, **) do |sheet|
           row_processor = build_row_processor(sheet, messenger)
 
           sheet.each_row do |row|
@@ -35,7 +35,7 @@ module Sheetah
     private
 
     def parse_headers(sheet, messenger)
-      headers = Headers.new(specification: @specification, messenger: messenger)
+      headers = Headers.new(specification: @specification, messenger:)
 
       sheet.each_header do |header|
         headers.add(header)
@@ -47,7 +47,7 @@ module Sheetah
     def build_row_processor(sheet, messenger)
       headers = parse_headers(sheet, messenger).unwrap
 
-      RowProcessor.new(headers: headers, messenger: messenger)
+      RowProcessor.new(headers:, messenger:)
     end
 
     def handle_result(result, messenger)

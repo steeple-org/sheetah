@@ -42,7 +42,7 @@ RSpec.describe Sheetah, monadic_result: true do
   end
 
   let(:template_config) do
-    Sheetah::TemplateConfig.new(types: types)
+    Sheetah::TemplateConfig.new(types:)
   end
 
   let(:specification) do
@@ -62,13 +62,13 @@ RSpec.describe Sheetah, monadic_result: true do
     ]
   end
 
-  def process(*args, **opts, &block)
-    processor.call(*args, backend: Sheetah::Backends::Wrapper, **opts, &block)
+  def process(*, **, &)
+    processor.call(*, backend: Sheetah::Backends::Wrapper, **, &)
   end
 
-  def process_to_a(*args, **opts)
+  def process_to_a(*, **)
     a = []
-    processor.call(*args, backend: Sheetah::Backends::Wrapper, **opts) { |result| a << result }
+    processor.call(*, backend: Sheetah::Backends::Wrapper, **) { |result| a << result }
     a
   end
 
@@ -136,6 +136,32 @@ RSpec.describe Sheetah, monadic_result: true do
         expect(results[1].result).to eq(
           Success(foo: "dlrow", bar: [nil, nil, "foo@bar.baz", nil, Float])
         )
+      end
+
+      context "when the reporting is enabled" do
+        before { template_opts[:report_ignored_columns] = true }
+
+        it "messages the ignored columns" do # rubocop:disable RSpec/ExampleLength
+          expect(process(input) {}).to have_attributes(
+            result: Success(),
+            messages: contain_exactly(
+              have_attributes(
+                code: "ignored_column",
+                code_data: "oof",
+                scope: Sheetah::Messaging::SCOPES::COL,
+                scope_data: { col: "C" },
+                severity: Sheetah::Messaging::SEVERITIES::WARN
+              ),
+              have_attributes(
+                code: "ignored_column",
+                code_data: "rab",
+                scope: Sheetah::Messaging::SCOPES::COL,
+                scope_data: { col: "F" },
+                severity: Sheetah::Messaging::SEVERITIES::WARN
+              )
+            )
+          )
+        end
       end
     end
 

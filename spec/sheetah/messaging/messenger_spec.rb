@@ -29,7 +29,7 @@ RSpec.describe Sheetah::Messaging::Messenger do
       end
 
       it "may have some custom, frozen attributes" do
-        messenger = described_class.new(scope: scope, scope_data: scope_data)
+        messenger = described_class.new(scope:, scope_data:)
 
         expect(messenger).to have_attributes(
           scope: be_the_frozen(scope),
@@ -41,7 +41,7 @@ RSpec.describe Sheetah::Messaging::Messenger do
 
     describe "#dup" do
       let(:messenger1) do
-        described_class.new(scope: scope, scope_data: scope_data)
+        described_class.new(scope:, scope_data:)
       end
 
       it "returns a new instance" do
@@ -144,8 +144,8 @@ RSpec.describe Sheetah::Messaging::Messenger do
       result
     end
 
-    def stub_scoping!(receiver, *args, &block)
-      allow_method_call_checking_block(receiver, :scoping!, *args, &block)
+    def stub_scoping!(receiver, ...)
+      allow_method_call_checking_block(receiver, :scoping!, ...)
     end
 
     describe "#scoping" do
@@ -175,12 +175,12 @@ RSpec.describe Sheetah::Messaging::Messenger do
         let(:messenger) { described_class.new }
 
         it "scopes the messenger to the given row (with a block)" do
-          scoping_result = stub_scoping!(messenger, scopes::ROW, { row: row }, &scoping_block)
+          scoping_result = stub_scoping!(messenger, scopes::ROW, { row: }, &scoping_block)
           expect(messenger.scope_row!(row, &scoping_block)).to eq(scoping_result)
         end
 
         it "scopes the messenger to the given row (without a block)" do
-          scoping_result = stub_scoping!(messenger, scopes::ROW, { row: row })
+          scoping_result = stub_scoping!(messenger, scopes::ROW, { row: })
           expect(messenger.scope_row!(row)).to eq(scoping_result)
         end
       end
@@ -190,27 +190,27 @@ RSpec.describe Sheetah::Messaging::Messenger do
         let(:messenger) { described_class.new(scope: scopes::ROW, scope_data: { row: other_row }) }
 
         it "scopes the messenger to the given row (with a block)" do
-          scoping_result = stub_scoping!(messenger, scopes::ROW, { row: row }, &scoping_block)
+          scoping_result = stub_scoping!(messenger, scopes::ROW, { row: }, &scoping_block)
           expect(messenger.scope_row!(row, &scoping_block)).to eq(scoping_result)
         end
 
         it "scopes the messenger to the given row (without a block)" do
-          scoping_result = stub_scoping!(messenger, scopes::ROW, { row: row })
+          scoping_result = stub_scoping!(messenger, scopes::ROW, { row: })
           expect(messenger.scope_row!(row)).to eq(scoping_result)
         end
       end
 
       context "when the messenger is scoped to a col" do
-        let(:messenger) { described_class.new(scope: scopes::COL, scope_data: { col: col }) }
+        let(:messenger) { described_class.new(scope: scopes::COL, scope_data: { col: }) }
 
         it "scopes the messenger to the appropriate cell (with a block)" do
           scoping_result =
-            stub_scoping!(messenger, scopes::CELL, { col: col, row: row }, &scoping_block)
+            stub_scoping!(messenger, scopes::CELL, { col:, row: }, &scoping_block)
           expect(messenger.scope_row!(row, &scoping_block)).to eq(scoping_result)
         end
 
         it "scopes the messenger to the appropriate cell (without a block)" do
-          scoping_result = stub_scoping!(messenger, scopes::CELL, { col: col, row: row })
+          scoping_result = stub_scoping!(messenger, scopes::CELL, { col:, row: })
           expect(messenger.scope_row!(row)).to eq(scoping_result)
         end
       end
@@ -219,25 +219,25 @@ RSpec.describe Sheetah::Messaging::Messenger do
         let(:other_row) { double }
 
         let(:messenger) do
-          described_class.new(scope: scopes::CELL, scope_data: { col: col, row: other_row })
+          described_class.new(scope: scopes::CELL, scope_data: { col:, row: other_row })
         end
 
         it "scopes the messenger to the new appropriate cell (with a block)" do
           scoping_result =
-            stub_scoping!(messenger, scopes::CELL, { col: col, row: row }, &scoping_block)
+            stub_scoping!(messenger, scopes::CELL, { col:, row: }, &scoping_block)
           expect(messenger.scope_row!(row, &scoping_block)).to eq(scoping_result)
         end
 
         it "scopes the messenger to the new appropriate cell (without a block)" do
-          scoping_result = stub_scoping!(messenger, scopes::CELL, { col: col, row: row })
+          scoping_result = stub_scoping!(messenger, scopes::CELL, { col:, row: })
           expect(messenger.scope_row!(row)).to eq(scoping_result)
         end
       end
     end
 
     describe "#scope_row" do
-      def stub_scope_row!(receiver, *args, &block)
-        allow_method_call_checking_block(receiver, :scope_row!, *args, &block)
+      def stub_scope_row!(receiver, ...)
+        allow_method_call_checking_block(receiver, :scope_row!, ...)
       end
 
       let(:messenger) { described_class.new }
@@ -263,12 +263,12 @@ RSpec.describe Sheetah::Messaging::Messenger do
         let(:messenger) { described_class.new }
 
         it "scopes the messenger to the given col (with a block)" do
-          scoping_result = stub_scoping!(messenger, scopes::COL, { col: col }, &scoping_block)
+          scoping_result = stub_scoping!(messenger, scopes::COL, { col: }, &scoping_block)
           expect(messenger.scope_col!(col, &scoping_block)).to eq(scoping_result)
         end
 
         it "scopes the messenger to the given col (without a block)" do
-          scoping_result = stub_scoping!(messenger, scopes::COL, { col: col })
+          scoping_result = stub_scoping!(messenger, scopes::COL, { col: })
           expect(messenger.scope_col!(col)).to eq(scoping_result)
         end
       end
@@ -278,27 +278,27 @@ RSpec.describe Sheetah::Messaging::Messenger do
         let(:messenger) { described_class.new(scope: scopes::COL, scope_data: { col: other_col }) }
 
         it "scopes the messenger to the given col (with a block)" do
-          scoping_result = stub_scoping!(messenger, scopes::COL, { col: col }, &scoping_block)
+          scoping_result = stub_scoping!(messenger, scopes::COL, { col: }, &scoping_block)
           expect(messenger.scope_col!(col, &scoping_block)).to eq(scoping_result)
         end
 
         it "scopes the messenger to the given col (without a block)" do
-          scoping_result = stub_scoping!(messenger, scopes::COL, { col: col })
+          scoping_result = stub_scoping!(messenger, scopes::COL, { col: })
           expect(messenger.scope_col!(col)).to eq(scoping_result)
         end
       end
 
       context "when the messenger is scoped to a row" do
-        let(:messenger) { described_class.new(scope: scopes::ROW, scope_data: { row: row }) }
+        let(:messenger) { described_class.new(scope: scopes::ROW, scope_data: { row: }) }
 
         it "scopes the messenger to the appropriate cell (with a block)" do
           scoping_result =
-            stub_scoping!(messenger, scopes::CELL, { row: row, col: col }, &scoping_block)
+            stub_scoping!(messenger, scopes::CELL, { row:, col: }, &scoping_block)
           expect(messenger.scope_col!(col, &scoping_block)).to eq(scoping_result)
         end
 
         it "scopes the messenger to the appropriate cell (without a block)" do
-          scoping_result = stub_scoping!(messenger, scopes::CELL, { row: row, col: col })
+          scoping_result = stub_scoping!(messenger, scopes::CELL, { row:, col: })
           expect(messenger.scope_col!(col)).to eq(scoping_result)
         end
       end
@@ -307,25 +307,25 @@ RSpec.describe Sheetah::Messaging::Messenger do
         let(:other_col) { double }
 
         let(:messenger) do
-          described_class.new(scope: scopes::CELL, scope_data: { row: row, col: other_col })
+          described_class.new(scope: scopes::CELL, scope_data: { row:, col: other_col })
         end
 
         it "scopes the messenger to the new appropriate cell (with a block)" do
           scoping_result =
-            stub_scoping!(messenger, scopes::CELL, { row: row, col: col }, &scoping_block)
+            stub_scoping!(messenger, scopes::CELL, { row:, col: }, &scoping_block)
           expect(messenger.scope_col!(col, &scoping_block)).to eq(scoping_result)
         end
 
         it "scopes the messenger to the new appropriate cell (without a block)" do
-          scoping_result = stub_scoping!(messenger, scopes::CELL, { row: row, col: col })
+          scoping_result = stub_scoping!(messenger, scopes::CELL, { row:, col: })
           expect(messenger.scope_col!(col)).to eq(scoping_result)
         end
       end
     end
 
     describe "#scope_col" do
-      def stub_scope_col!(receiver, *args, &block)
-        allow_method_call_checking_block(receiver, :scope_col!, *args, &block)
+      def stub_scope_col!(receiver, ...)
+        allow_method_call_checking_block(receiver, :scope_col!, ...)
       end
 
       let(:messenger) { described_class.new }
@@ -354,7 +354,7 @@ RSpec.describe Sheetah::Messaging::Messenger do
     let(:code) { double }
     let(:code_data) { double }
 
-    let(:messenger) { described_class.new(scope: scope, scope_data: scope_data) }
+    let(:messenger) { described_class.new(scope:, scope_data:) }
 
     describe "#warn" do
       it "returns the receiver" do
@@ -366,10 +366,10 @@ RSpec.describe Sheetah::Messaging::Messenger do
 
         expect(messenger.messages).to contain_exactly(
           Sheetah::Messaging::Message.new(
-            code: code,
-            code_data: code_data,
-            scope: scope,
-            scope_data: scope_data,
+            code:,
+            code_data:,
+            scope:,
+            scope_data:,
             severity: severities::WARN
           )
         )
@@ -380,10 +380,10 @@ RSpec.describe Sheetah::Messaging::Messenger do
 
         expect(messenger.messages).to contain_exactly(
           Sheetah::Messaging::Message.new(
-            code: code,
+            code:,
             code_data: nil,
-            scope: scope,
-            scope_data: scope_data,
+            scope:,
+            scope_data:,
             severity: severities::WARN
           )
         )
@@ -400,10 +400,10 @@ RSpec.describe Sheetah::Messaging::Messenger do
 
         expect(messenger.messages).to contain_exactly(
           Sheetah::Messaging::Message.new(
-            code: code,
-            code_data: code_data,
-            scope: scope,
-            scope_data: scope_data,
+            code:,
+            code_data:,
+            scope:,
+            scope_data:,
             severity: severities::ERROR
           )
         )
@@ -414,10 +414,10 @@ RSpec.describe Sheetah::Messaging::Messenger do
 
         expect(messenger.messages).to contain_exactly(
           Sheetah::Messaging::Message.new(
-            code: code,
+            code:,
             code_data: nil,
-            scope: scope,
-            scope_data: scope_data,
+            scope:,
+            scope_data:,
             severity: severities::ERROR
           )
         )
@@ -440,10 +440,10 @@ RSpec.describe Sheetah::Messaging::Messenger do
 
         expect(messenger.messages).to contain_exactly(
           Sheetah::Messaging::Message.new(
-            code: code,
+            code:,
             code_data: nil,
-            scope: scope,
-            scope_data: scope_data,
+            scope:,
+            scope_data:,
             severity: severities::ERROR
           )
         )

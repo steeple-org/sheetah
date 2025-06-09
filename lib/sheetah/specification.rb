@@ -13,9 +13,10 @@ module Sheetah
     class DuplicatedPatternError < Errors::SpecError
     end
 
-    def initialize(ignore_unspecified_columns: false)
+    def initialize(ignore_unspecified_columns: false, report_ignored_columns: false)
       @column_by_pattern = {}
       @ignore_unspecified_columns = ignore_unspecified_columns
+      @report_ignored_columns = report_ignored_columns
     end
 
     def set(pattern, column)
@@ -54,6 +55,10 @@ module Sheetah
 
     def ignore_unspecified_columns?
       @ignore_unspecified_columns
+    end
+
+    def report_ignored_columns?
+      @report_ignored_columns
     end
 
     def freeze
